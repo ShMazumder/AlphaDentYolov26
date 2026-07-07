@@ -1,0 +1,74 @@
+# AlphaDent
+<img align="right" src="images/Logo_100px.png" alt="Описание" width="100">
+Repository for AlphaDent dataset. It contains links for dataset, train, validation and inference scripts for Yolov8.
+
+## Dataset links
+
+* Dataset on [zenodo](https://zenodo.org/records/16582489), [kaggle](https://www.kaggle.com/competitions/alpha-dent/data), [huggingface](https://huggingface.co/datasets/ZFTurbo/AlphaDent), [github](https://github.com/ZFTurbo/AlphaDent/releases/tag/v1.1)
+
+## Train
+
+* Download dataset and put in the folder with this code. Then fix path in `yolo_seg_train.yaml` if needed.
+* Then you can train with following script:
+
+```bash
+python3 train.py --dataset_config ./AlphaDent/yolo_seg_train.yaml --batch_size 16 --epochs 100 --image_size 640
+```
+
+Results of training will be stored in folder `./yolo_seg_x_proj_640`.
+
+## Pretrained weights
+
+There are 3 different pretrained wights available: 
+1) Yolo_v8x, 9 classes and 640 input. Download: [Link](https://github.com/ZFTurbo/AlphaDent/releases/download/v1.0/yolov8x_AlphaDent_9_classes_640px.pt)
+2) Yolo_v8x, 9 classes and 960 input. Download: [Link](https://github.com/ZFTurbo/AlphaDent/releases/download/v1.0/yolov8x_AlphaDent_9_classes_960px.pt)
+3) Yolo_v8x, 4 classes and 960 input. Download: [Link](https://github.com/ZFTurbo/AlphaDent/releases/download/v1.0/yolov8x_AlphaDent_4_classes_960px.pt)
+
+
+## Validation
+
+Validation will run model with validation data and output metrics.
+
+```bash
+python3 valid.py --weights './weights/yolov8x_AlphaDent_9_classes_640px.pt' --dataset_config './AlphaDent/yolo_seg_train.yaml' --batch_size 16 --epochs 100 --image_size 640
+```
+
+## Inference
+
+If you have new dental photos for which you want to obtain predictions you can use inference script.
+
+```bash
+python3 inference.py --weights './weights/yolov8x_AlphaDent_9_classes_640px.pt' --input_path './AlphaDent/images/test/' --output_path './output/' --batch_size 16 --image_size 640
+```
+
+## Useful scripts
+
+### Convert 9 classes dataset to 4 classes
+
+```bash
+python3 utils/convert_9_classes_dataset_to_4_classes.py --input_path './AlphaDent/' --output_path './AlphaDent_4_classes/' 
+```
+
+### Draw Yolo annotations
+
+```bash
+python3 utils/draw_annotations.py --input_path './AlphaDent/' --output_path './Draw_Annotations/' 
+```
+
+## Citations
+
+If you find this work useful please cite:
+
+```
+@misc{sosnin2025alphadent,
+  title={AlphaDent: A dataset for automated tooth pathology detection},
+  author={Evgeniy I. Sosnin and Yuriy L. Vasilev and Roman A. Solovyev and Aleksandr L. Stempkovskiy and Dmitry V. Telpukhov and Artem A. Vasilev and Aleksandr A. Amerikanov and Aleksandr Y. Romanov},
+  journal={Computer Optics},
+  volume={49},
+  pages={6},
+  year={2025},
+}
+```
+
+
+
