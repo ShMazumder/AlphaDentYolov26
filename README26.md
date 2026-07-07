@@ -6,6 +6,14 @@ Repository for AlphaDent dataset. It contains links for dataset, train, validati
 
 * Dataset on [zenodo](https://zenodo.org/records/16582489), [kaggle](https://www.kaggle.com/competitions/alpha-dent/data), [huggingface](https://huggingface.co/datasets/ZFTurbo/AlphaDent), [github](https://github.com/ZFTurbo/AlphaDent/releases/tag/v1.1)
 
+## Interactive Jupyter Notebook (Kaggle/Colab)
+
+An end-to-end interactive notebook is available at [alphadent-yolo26.ipynb](alphadent-yolo26.ipynb). It includes:
+* **Automatic Dataset Setup**: Resolves Kaggle read-only input mount directory issues or downloads the Zenodo ZIP fallback.
+* **Multi-GPU / DDP Training**: Dynamically configures distributed data parallel training across all available GPUs.
+* **Self-Healing Validation**: Optimized to prevent CUDA Out-of-Memory crashes on high-resolution dental images by falling back to CPU validation if VRAM limit is exceeded.
+* **Explainable AI (XAI)**: Includes a custom, self-contained `YOLOExplainer` class supporting 7 Class Activation Mapping (CAM) methods: **Eigen-CAM**, **Grad-CAM**, **Grad-CAM++**, **XGrad-CAM**, **HiRes-CAM**, **Layer-CAM**, and **EigenGrad-CAM**.
+
 ## Train
 
 * Download dataset and put in the folder with this code. Then fix path in `yolo_seg_train.yaml` if needed.
