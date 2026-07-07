@@ -1,2 +1,3 @@
-/AlphaDent/
 .venv
+!*.yaml
+/AlphaDent/*/
