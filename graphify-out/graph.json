@@ -1,0 +1,313 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "valid.py",
+      "file_type": "code",
+      "source_file": "valid.py",
+      "source_location": "L1",
+      "id": "valid_py",
+      "community": 1,
+      "norm_label": "valid.py"
+    },
+    {
+      "label": "valid_seg_yolo()",
+      "file_type": "code",
+      "source_file": "valid.py",
+      "source_location": "L21",
+      "id": "alphadentyolov26_valid_valid_seg_yolo",
+      "community": 1,
+      "norm_label": "valid_seg_yolo()"
+    },
+    {
+      "label": "valid26.py",
+      "file_type": "code",
+      "source_file": "valid26.py",
+      "source_location": "L1",
+      "id": "valid26_py",
+      "community": 2,
+      "norm_label": "valid26.py"
+    },
+    {
+      "label": "valid_seg_yolo()",
+      "file_type": "code",
+      "source_file": "valid26.py",
+      "source_location": "L21",
+      "id": "alphadentyolov26_valid26_valid_seg_yolo",
+      "community": 2,
+      "norm_label": "valid_seg_yolo()"
+    },
+    {
+      "label": "inference26.py",
+      "file_type": "code",
+      "source_file": "inference26.py",
+      "source_location": "L1",
+      "id": "inference26_py",
+      "community": 3,
+      "norm_label": "inference26.py"
+    },
+    {
+      "label": "predict_test_seg_yolo()",
+      "file_type": "code",
+      "source_file": "inference26.py",
+      "source_location": "L21",
+      "id": "alphadentyolov26_inference26_predict_test_seg_yolo",
+      "community": 3,
+      "norm_label": "predict_test_seg_yolo()"
+    },
+    {
+      "label": "train.py",
+      "file_type": "code",
+      "source_file": "train.py",
+      "source_location": "L1",
+      "id": "train_py",
+      "community": 4,
+      "norm_label": "train.py"
+    },
+    {
+      "label": "train_seg_yolo()",
+      "file_type": "code",
+      "source_file": "train.py",
+      "source_location": "L20",
+      "id": "alphadentyolov26_train_train_seg_yolo",
+      "community": 4,
+      "norm_label": "train_seg_yolo()"
+    },
+    {
+      "label": "train26.py",
+      "file_type": "code",
+      "source_file": "train26.py",
+      "source_location": "L1",
+      "id": "train26_py",
+      "community": 5,
+      "norm_label": "train26.py"
+    },
+    {
+      "label": "train_seg_yolo()",
+      "file_type": "code",
+      "source_file": "train26.py",
+      "source_location": "L20",
+      "id": "alphadentyolov26_train26_train_seg_yolo",
+      "community": 5,
+      "norm_label": "train_seg_yolo()"
+    },
+    {
+      "label": "inference.py",
+      "file_type": "code",
+      "source_file": "inference.py",
+      "source_location": "L1",
+      "id": "inference_py",
+      "community": 6,
+      "norm_label": "inference.py"
+    },
+    {
+      "label": "predict_test_seg_yolo()",
+      "file_type": "code",
+      "source_file": "inference.py",
+      "source_location": "L21",
+      "id": "alphadentyolov26_inference_predict_test_seg_yolo",
+      "community": 6,
+      "norm_label": "predict_test_seg_yolo()"
+    },
+    {
+      "label": "convert_9_classes_dataset_to_4_classes_yolo26.py",
+      "file_type": "code",
+      "source_file": "utils/convert_9_classes_dataset_to_4_classes_yolo26.py",
+      "source_location": "L1",
+      "id": "utils_convert_9_classes_dataset_to_4_classes_yolo26_py",
+      "community": 7,
+      "norm_label": "convert_9_classes_dataset_to_4_classes_yolo26.py"
+    },
+    {
+      "label": "convert_9_classes_dataset_to_4_classes.py",
+      "file_type": "code",
+      "source_file": "utils/convert_9_classes_dataset_to_4_classes.py",
+      "source_location": "L1",
+      "id": "utils_convert_9_classes_dataset_to_4_classes_py",
+      "community": 8,
+      "norm_label": "convert_9_classes_dataset_to_4_classes.py"
+    },
+    {
+      "label": "draw_annotations.py",
+      "file_type": "code",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L1",
+      "id": "utils_draw_annotations_py",
+      "community": 0,
+      "norm_label": "draw_annotations.py"
+    },
+    {
+      "label": "load_yolo_annotations()",
+      "file_type": "code",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L12",
+      "id": "utils_draw_annotations_load_yolo_annotations",
+      "community": 0,
+      "norm_label": "load_yolo_annotations()"
+    },
+    {
+      "label": "visualize_yolo_instance_segmentation()",
+      "file_type": "code",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L49",
+      "id": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "community": 0,
+      "norm_label": "visualize_yolo_instance_segmentation()"
+    },
+    {
+      "label": "Loads YOLO annotations for instance segmentation from a file.      :param annota",
+      "file_type": "rationale",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L13",
+      "id": "utils_draw_annotations_rationale_13",
+      "community": 0,
+      "norm_label": "loads yolo annotations for instance segmentation from a file.      :param annota"
+    },
+    {
+      "label": "Visualizes YOLO annotations for instance segmentation on an image.      :param i",
+      "file_type": "rationale",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L50",
+      "id": "utils_draw_annotations_rationale_50",
+      "community": 0,
+      "norm_label": "visualizes yolo annotations for instance segmentation on an image.      :param i"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "valid.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "valid_py",
+      "_tgt": "alphadentyolov26_valid_valid_seg_yolo",
+      "source": "valid_py",
+      "target": "alphadentyolov26_valid_valid_seg_yolo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "valid26.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "valid26_py",
+      "_tgt": "alphadentyolov26_valid26_valid_seg_yolo",
+      "source": "valid26_py",
+      "target": "alphadentyolov26_valid26_valid_seg_yolo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "inference26.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "inference26_py",
+      "_tgt": "alphadentyolov26_inference26_predict_test_seg_yolo",
+      "source": "inference26_py",
+      "target": "alphadentyolov26_inference26_predict_test_seg_yolo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "train.py",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "train_py",
+      "_tgt": "alphadentyolov26_train_train_seg_yolo",
+      "source": "train_py",
+      "target": "alphadentyolov26_train_train_seg_yolo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "train26.py",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "train26_py",
+      "_tgt": "alphadentyolov26_train26_train_seg_yolo",
+      "source": "train26_py",
+      "target": "alphadentyolov26_train26_train_seg_yolo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "inference.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "inference_py",
+      "_tgt": "alphadentyolov26_inference_predict_test_seg_yolo",
+      "source": "inference_py",
+      "target": "alphadentyolov26_inference_predict_test_seg_yolo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "utils_draw_annotations_py",
+      "_tgt": "utils_draw_annotations_load_yolo_annotations",
+      "source": "utils_draw_annotations_py",
+      "target": "utils_draw_annotations_load_yolo_annotations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_src": "utils_draw_annotations_py",
+      "_tgt": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "source": "utils_draw_annotations_py",
+      "target": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "_tgt": "utils_draw_annotations_load_yolo_annotations",
+      "source": "utils_draw_annotations_load_yolo_annotations",
+      "target": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "utils_draw_annotations_rationale_13",
+      "_tgt": "utils_draw_annotations_load_yolo_annotations",
+      "source": "utils_draw_annotations_load_yolo_annotations",
+      "target": "utils_draw_annotations_rationale_13",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/draw_annotations.py",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_src": "utils_draw_annotations_rationale_50",
+      "_tgt": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "source": "utils_draw_annotations_visualize_yolo_instance_segmentation",
+      "target": "utils_draw_annotations_rationale_50",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
