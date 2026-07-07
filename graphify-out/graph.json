@@ -161,18 +161,18 @@
       "file_type": "rationale",
       "source_file": "utils/draw_annotations.py",
       "source_location": "L13",
-      "id": "utils_draw_annotations_rationale_13",
       "community": 0,
-      "norm_label": "loads yolo annotations for instance segmentation from a file.      :param annota"
+      "norm_label": "loads yolo annotations for instance segmentation from a file.      :param annota",
+      "id": "utils_draw_annotations_rationale_13"
     },
     {
       "label": "Visualizes YOLO annotations for instance segmentation on an image.      :param i",
       "file_type": "rationale",
       "source_file": "utils/draw_annotations.py",
       "source_location": "L50",
-      "id": "utils_draw_annotations_rationale_50",
       "community": 0,
-      "norm_label": "visualizes yolo annotations for instance segmentation on an image.      :param i"
+      "norm_label": "visualizes yolo annotations for instance segmentation on an image.      :param i",
+      "id": "utils_draw_annotations_rationale_50"
     }
   ],
   "links": [
