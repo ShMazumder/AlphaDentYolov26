@@ -36,44 +36,52 @@
 
 \pagestyle{empty} % Apply empty style to other pages
 
+\makeatletter
+\newcommand{\linebreakand}{%
+  \end{@IEEEauthorhalign}%
+  \hfill\mbox{}\par%
+  \noindent\mbox{}\hfill\begin{@IEEEauthorhalign}%
+}
+\makeatother
+
 \title{Multi-Method Explainability for YOLO26-Based Caries Detection in Intra-oral Photos}
 
-\author{
-\IEEEauthorblockN{First Author Name}
-\IEEEauthorblockA{\textit{Department Name} \\
-\textit{Institution Name}\\
-City, Country \\
-author1@example.com}
-\and
-\IEEEauthorblockN{Second Author Name}
-\IEEEauthorblockA{\textit{Department Name} \\
-\textit{Institution Name}\\
-City, Country \\
-author2@example.com}
-\and
-\IEEEauthorblockN{Third Author Name}
-\IEEEauthorblockA{\textit{Department Name} \\
-\textit{Institution Name}\\
-City, Country \\
-author3@example.com}
-\\[0.2cm]
-\IEEEauthorblockN{Fourth Author Name}
-\IEEEauthorblockA{\textit{Department Name} \\
-\textit{Institution Name}\\
-City, Country \\
-author4@example.com}
-\and
-\IEEEauthorblockN{Fifth Author Name}
-\IEEEauthorblockA{\textit{Department Name} \\
-\textit{Institution Name}\\
-City, Country \\
-author5@example.com}
-\and
-\IEEEauthorblockN{Sixth Author Name}
-\IEEEauthorblockA{\textit{Department Name} \\
-\textit{Institution Name}\\
-City, Country \\
-author6@example.com}
+\author{%
+\IEEEauthorblockN{First Author Name}%
+\IEEEauthorblockA{\textit{Department Name} \\%
+\textit{Institution Name}\\%
+City, Country \\%
+author1@example.com}%
+\and%
+\IEEEauthorblockN{Second Author Name}%
+\IEEEauthorblockA{\textit{Department Name} \\%
+\textit{Institution Name}\\%
+City, Country \\%
+author2@example.com}%
+\and%
+\IEEEauthorblockN{Third Author Name}%
+\IEEEauthorblockA{\textit{Department Name} \\%
+\textit{Institution Name}\\%
+City, Country \\%
+author3@example.com}%
+\linebreakand%
+\IEEEauthorblockN{Fourth Author Name}%
+\IEEEauthorblockA{\textit{Department Name} \\%
+\textit{Institution Name}\\%
+City, Country \\%
+author4@example.com}%
+\and%
+\IEEEauthorblockN{Fifth Author Name}%
+\IEEEauthorblockA{\textit{Department Name} \\%
+\textit{Institution Name}\\%
+City, Country \\%
+author5@example.com}%
+\and%
+\IEEEauthorblockN{Sixth Author Name}%
+\IEEEauthorblockA{\textit{Department Name} \\%
+\textit{Institution Name}\\%
+City, Country \\%
+author6@example.com}%
 }
 
 \begin{document}
