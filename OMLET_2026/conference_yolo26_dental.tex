@@ -1,0 +1,223 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\renewcommand{\thesection}{\Roman{section}}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{algorithm}
+\usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{algorithmic}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{hyperref,graphicx,color,float}
+\definecolor{myblue}{RGB}{10, 150, 200}
+
+\usepackage{cite}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{textcomp}
+\usepackage{comment}
+\definecolor{highlightColor}{HTML}{E6FFE6}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\fancypagestyle{firstpage}{
+  \fancyhf{} % Clear all header and footer fields
+  \fancyhead[L]{\small 2026 IEEE International Conference on Optics, Machine Learning and Emerging Technology (OMLET)
+ \\ 29 -- 31 October 2026, Nairobi, Kenya}
+  \fancyfoot[L]{\small 979-8-3195-1287-1/26/\$31.00 \copyright2026 IEEE} % Left-align the footer
+  \renewcommand{\headrulewidth}{0pt} % Remove the header rule
+  \renewcommand{\footrulewidth}{0pt} % Remove the footer rule
+}
+
+\pagestyle{plain} % Apply plain style to other pages
+
+\title{Multi-Method Explainability for YOLO26-Based Caries Detection in Intra-oral Photos}
+
+\author
+{\IEEEauthorblockN{First Author Name\textsuperscript{1}, Second Author Name\textsuperscript{2}, Third Author Name\textsuperscript{3},\\ Fourth Author Name\textsuperscript{4}, Fifth Author Name\textsuperscript{5}, Sixth Author Name\textsuperscript{6}}
+\IEEEauthorblockA{\textsuperscript{1,6}Department Name, Institution Name\\ City, Country\\
+\textsuperscript{2,3,4,5}Department Name, Institution Name\\
+\textnormal{City, Country \\
+\textsuperscript{1}author1@example.com, \textsuperscript{2}author2@example.com,
+\textsuperscript{6}author6@example.com
+}}
+}
+
+\begin{document}
+\maketitle
+\thispagestyle{firstpage} % Apply the footer only on the first page
+
+\begin{abstract}
+A dentist looking at an AI-flagged caries lesion has two reasonable questions: is the model right, and why does it think so? Most segmentation models that could answer the first question well are too heavy to run chairside and too opaque to answer the second one at all. We tackle both problems with a single pipeline built on YOLO26, trained to segment nine tooth pathology classes in intra-oral photographs from the AlphaDent dataset. Against a YOLOv8x baseline evaluated at 640 px and 960 px, we test three configurations: YOLO26m at 640 px and YOLO26l/YOLO26x at 960 px. The medium model turns out to be a remarkably good bargain. It reaches 0.4415 Box mAP@50 and 0.4298 Mask mAP@50 with 23.5M parameters and 121.2 GFLOPs, giving up only 1.65 mAP points to the 71.8M-parameter baseline while cutting compute by 64.8\%. Training scales across GPUs through Distributed Data Parallel (roughly 1.85$\times$ faster on two Tesla T4s), and a self-healing validation routine survives the CUDA out-of-memory crashes that high-resolution dental photographs otherwise cause. To answer the ``why'' question, our YOLOExplainer module hooks into intermediate YOLO26 layers and produces class activation maps with seven attribution methods, letting clinicians see, and cross-check, exactly which image regions drive each prediction.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Dental caries detection, YOLO26, instance segmentation, explainable AI, class activation mapping, distributed data parallel, intra-oral photography
+\end{IEEEkeywords}
+
+\section{Introduction}
+Dental caries is among the most common chronic diseases in the world, and much of its damage is preventable if lesions are caught early. Intra-oral photography is an appealing screening channel for exactly this reason: it is cheap, radiation-free, and increasingly available even outside specialist clinics. Deep detectors have already shown they can pull clinically useful signal from dental images, from tooth detection and numbering in panoramic radiographs~\cite{tuzoff2019tooth} to interproximal caries in bitewings~\cite{bayati2025advanced}, pulp involvement in primary molars~\cite{sohrabi2025deep}, and GV Black caries classification~\cite{agulan2024detection}.
+
+Yet two practical obstacles keep these models out of everyday practice. The first is cost: the best instance segmentation models are large, and a 70M-parameter network is a poor fit for a chairside tablet or an edge device in a rural clinic. The second is trust. A dentist cannot act on a prediction they cannot inspect, and the medical AI literature has been blunt about the need for explainability and causability before clinical adoption~\cite{holzinger2019causability, adadi2018peeking}.
+
+We address both obstacles together. Starting from the reference YOLOv8 pipeline~\cite{jocher2023ultralytics} for the AlphaDent dataset~\cite{sosnin2025alphadent}, a collection of intra-oral photographs annotated with nine tooth pathology classes, we migrate to the YOLO26 family of unified real-time vision models~\cite{jocher2026yolo26}, whose \texttt{Segment26} head is well suited to fine-grained multi-class medical instance segmentation. Along the way we fix several engineering problems that quietly break reproducibility, and we add an explainability layer designed for clinical inspection rather than as an afterthought. Our contributions are:
+
+\begin{itemize}
+\item A YOLO26-based instance segmentation pipeline for nine-class dental pathology detection in intra-oral photographs, evaluated in three configurations (YOLO26m at 640 px, YOLO26l and YOLO26x at 960 px) against YOLOv8x baselines at 640 px and 960 px.
+\item Dynamic multi-GPU training via PyTorch Distributed Data Parallel (DDP), replacing the baseline's hard-coded single device, together with a self-healing validation routine that survives CUDA out-of-memory (OOM) events on very high-resolution images.
+\item \textit{YOLOExplainer}, a self-contained module that produces class activation maps for YOLO26 predictions using seven complementary post-hoc methods, so that clinicians can visually audit which regions drive each pathology call.
+\item An accuracy--efficiency analysis showing that YOLO26m-seg keeps near-baseline accuracy at roughly one third of the parameters and 35.2\% of the compute of YOLOv8x-seg.
+\end{itemize}
+
+\section{Literature Review}
+\textbf{Real-time detection and instance segmentation.} Since the original YOLO reframed detection as a single-pass regression problem~\cite{redmon2016yolo}, the family has iterated quickly: YOLOv8~\cite{jocher2023ultralytics}, YOLOv9 with programmable gradient information~\cite{wang2024yolov9}, the NMS-free end-to-end YOLOv10~\cite{wang2024yolov10}, YOLO11~\cite{ultralytics2024yolo11}, the attention-centric YOLOv12~\cite{tian2025yolov12}, and most recently YOLO26, which unifies detection, segmentation, pose, and classification in one end-to-end design~\cite{jocher2026yolo26}. On the segmentation side, Mask R-CNN~\cite{he2017maskrcnn} set the two-stage standard, while YOLACT~\cite{bolya2019yolact} showed that prototype masks could deliver real-time instance segmentation, the idea modern YOLO segmentation heads still build on.
+
+\textbf{Deep learning in dental imaging.} Convolutional networks reached expert-level tooth detection and numbering on panoramic radiographs years ago~\cite{tuzoff2019tooth}, and recent YOLOv8 studies have moved into genuinely clinical territory: interproximal caries in bitewings~\cite{bayati2025advanced}, pulp involvement in primary molars~\cite{sohrabi2025deep}, and caries classification~\cite{agulan2024detection}. Progress, however, is bottlenecked by data. Uribe et al.\ survey the public dental dataset landscape and find it thin~\cite{uribe2024public}. AlphaDent~\cite{sosnin2025alphadent} helps by contributing densely annotated intra-oral photographs across nine pathology classes, and open frameworks such as SegmentAnyTooth target tooth enumeration and segmentation on the same modality~\cite{nguyen2025segmentanytooth}.
+
+\textbf{Explainable AI for medical detection.} Class activation mapping began with CAM~\cite{zhou2016cam} and has since branched into a family of methods with different strengths: Grad-CAM's gradient weighting~\cite{selvaraju2017grad}, Grad-CAM++'s second-order refinement for multiple instances~\cite{chattopadhay2018grad}, the axiom-grounded XGrad-CAM~\cite{fu2020axiom}, HiRes-CAM's faithfulness guarantee~\cite{draelos2020use}, Layer-CAM's use of intermediate layers~\cite{jiang2021layercam}, and the gradient-free Eigen-CAM~\cite{muhammad2020eigen}. Post-hoc CAM analysis has been applied to YOLO-based medical diagnosis before~\cite{borah2024comprehensive}, but existing wrappers rarely speak to modern YOLO segmentation heads. Closing that gap for \texttt{Segment26} is one of the goals of this work.
+
+\section{Methodology}
+Fig.~\ref{fig:pipeline} gives an overview of the pipeline: automated dataset staging, DDP training, memory-safe validation, and multi-method XAI attribution. The subsections below walk through each stage and, where relevant, the failure it was designed around.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.48\textwidth]{fig_pipeline.png}
+\caption{Overview of the proposed interpretable YOLO26 pipeline for dental pathology instance segmentation.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Dataset and Preprocessing}
+We use AlphaDent~\cite{sosnin2025alphadent}, a set of high-resolution intra-oral photographs annotated with polygon instance masks for nine dentist-defined pathology classes, caries among them. A small but instructive detail: symbolically linking the label directory from a read-only competition mount seems harmless, but YOLO writes \texttt{.cache} scan files next to the labels, so training crashes. The pipeline therefore copies images, labels, and the dataset YAML recursively into a writable working directory (\texttt{shutil.copytree(..., dirs\_exist\_ok=True)}), falling back to a Zenodo download when the competition mount is absent. We train at two input scales, 640$\times$640 (YOLO26m) and 960$\times$960 (YOLO26l, YOLO26x), matching the two baseline YOLOv8x resolutions.
+
+\subsection{YOLO26 Architecture}
+YOLO26~\cite{jocher2026yolo26} is a unified, end-to-end real-time vision model family. We use its instance segmentation variants, whose \texttt{Segment26} head predicts prototype masks and per-instance coefficients in the YOLACT style~\cite{bolya2019yolact}, decoded jointly with box regression and nine-class logits. The size difference from the baseline is what makes chairside deployment plausible: YOLOv8x-seg carries 71.8M parameters and 344.1 GFLOPs, while YOLO26m-seg needs 23.5M parameters and 121.2 GFLOPs (fused), reductions of 67.2\% and 64.8\%.
+
+\subsection{Dynamic Multi-GPU Training with DDP}
+The baseline scripts hard-code \texttt{device=[0]}, so a second GPU sits idle unless the user edits the source. We instead enumerate whatever is available at runtime,
+\begin{equation}
+\mathcal{D} = \{0, 1, \dots, N_{\mathrm{GPU}}-1\},
+\end{equation}
+and launch DDP training across all of it. Validation and prediction are deliberately routed back to a single device ($\mathcal{D}_0$): DDP validation loops are prone to multi-threaded metric-aggregation conflicts, and a single device sidesteps them entirely. On two Tesla T4 GPUs, 50 epochs finish in 1.46 hours, roughly a 1.85$\times$ speedup over the single-GPU configuration.
+
+\subsection{Self-Healing Memory-Safe Validation}
+This component exists because validation kept crashing. AlphaDent images are very large, and with \texttt{save\_json} or \texttt{save\_txt} enabled, YOLO reconstructs masks at full resolution via bilinear interpolation; on multi-instance images this transiently allocates up to 15.69~GiB and kills the GPU kernel. A naive retreat to the CPU fails differently, since holding all the scaled float tensors in system RAM invites the OS OOM killer instead. The routine we settled on does three things: it disables raw-prediction dumping so metrics are computed on downscaled mask grids, it flushes memory (\texttt{gc.collect()}, \texttt{torch.cuda.empty\_cache()}) before evaluation, and it wraps the whole call in a fallback that catches CUDA OOM errors and re-runs on CPU, as summarized in Algorithm~\ref{alg:selfheal}.
+
+\begin{algorithm}[htbp]
+\caption{Self-Healing Memory-Safe Validation}
+\label{alg:selfheal}
+\begin{algorithmic}[1]
+\STATE Disable \texttt{save\_json}, \texttt{save\_txt}, \texttt{save\_conf}
+\STATE \texttt{gc.collect()}; \texttt{torch.cuda.empty\_cache()}
+\STATE \textbf{try:} $\text{metrics} \leftarrow \texttt{model.val}(\text{device}=\mathcal{D}_0,\ \text{batch}=1,\ \text{FP16})$
+\STATE \textbf{except} RuntimeError $e$:
+\IF{``out of memory'' $\in$ $e$}
+\STATE \texttt{gc.collect()}; \texttt{torch.cuda.empty\_cache()}
+\STATE $\text{metrics} \leftarrow \texttt{model.val}(\text{device}=\text{CPU},\ \text{batch}=1,\ \text{FP32})$
+\ELSE
+\STATE \textbf{raise} $e$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+We also fixed a quiet but severe bug in the baseline CLI: \texttt{--conf} and \texttt{--iou} were declared as \texttt{type=int}, which truncates a threshold like 0.001 to 0. All thresholds in our pipeline are plain, type-safe Python floats.
+
+\subsection{Explainability: The YOLOExplainer Framework}
+A prediction a clinician cannot inspect is a prediction they cannot trust, so we built explainability into the pipeline rather than bolting it on. \textit{YOLOExplainer} registers forward and backward hooks on a chosen intermediate YOLO26 layer, by default the final \texttt{C3k2} neck block (layer index 22), to capture feature activations $A^k$. It then back-propagates the summed per-class score from the \texttt{Segment26} head output to obtain gradients $\partial y^c / \partial A^k$, from which class activation maps are computed. If no target class is given, the module explains whichever of the nine pathology channels has the largest aggregate score. Generic CAM wrappers do not handle modern YOLO segmentation outputs; this one operates directly on \texttt{Segment26} predictions and supports seven attribution methods:
+
+\begin{enumerate}
+\item \textbf{Eigen-CAM}~\cite{muhammad2020eigen}: first principal component of the 2D activations; gradient-free and highly robust.
+\item \textbf{Grad-CAM}~\cite{selvaraju2017grad}: activations weighted by spatially averaged class-score gradients.
+\item \textbf{Grad-CAM++}~\cite{chattopadhay2018grad}: second-order gradient weighting, which helps when several lesions co-occur.
+\item \textbf{XGrad-CAM}~\cite{fu2020axiom}: gradients scaled by normalized activations to satisfy sensitivity and conservation axioms.
+\item \textbf{HiRes-CAM}~\cite{draelos2020use}: element-wise activation--gradient product, with a guarantee of faithfulness to the decision path.
+\item \textbf{Layer-CAM}~\cite{jiang2021layercam}: positive-gradient spatial weighting of intermediate layers, useful for fine detail.
+\item \textbf{EigenGrad-CAM}: first principal component of the gradient--activation product, pairing Eigen-CAM's robustness with class discrimination.
+\end{enumerate}
+
+Why seven methods instead of one? Because each has known failure modes, and showing them side by side (Fig.~\ref{fig:xai}) lets a clinician check whether the attributions agree before trusting any of them, which is much closer to how the causability literature says medical explanations should work~\cite{holzinger2019causability, borah2024comprehensive}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.48\textwidth]{fig_xai.png}
+\caption{Class activation maps produced by the seven XAI methods for a caries instance predicted by YOLO26 on an AlphaDent intra-oral photograph.}
+\label{fig:xai}
+\end{figure}
+
+\section{Results and Discussions}
+\subsection{Experimental Setup}
+All models are trained on AlphaDent with the Ultralytics framework for 100 epochs at batch size 8, using DDP across two Tesla T4 GPUs with default Ultralytics segmentation hyperparameters and augmentation. Validation runs at batch size 1 with FP16 inference on GPU (full precision on the CPU fallback), a confidence threshold of 0.001, and an IoU threshold of 0.5; for qualitative figures we raise the confidence threshold to 0.25 for visual clarity. The baseline YOLOv8x-seg is evaluated at 640 px and 960 px; our YOLO26m-seg is trained at 640 px and YOLO26l-seg/YOLO26x-seg at 960 px. Table~\ref{tab:complexity} compares model complexity and Table~\ref{tab:results} reports accuracy. Cells marked ``--'' are results still being finalized from the corresponding runs.
+
+\begin{table}[htbp]
+\caption{Model Complexity Comparison}
+\label{tab:complexity}
+\centering
+\begin{adjustbox}{max width=0.48\textwidth}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Input (px)} & \textbf{Params (M)} & \textbf{GFLOPs} \\
+\midrule
+YOLOv8x-seg (baseline)~\cite{jocher2023ultralytics} & 640 / 960 & 71.8 & 344.1 \\
+\rowcolor{highlightColor}
+YOLO26m-seg (ours) & 640 & \textbf{23.5} & \textbf{121.2} \\
+\rowcolor{highlightColor}
+YOLO26l-seg (ours) & 960 & -- & -- \\
+\rowcolor{highlightColor}
+YOLO26x-seg (ours) & 960 & -- & -- \\
+\midrule
+\multicolumn{2}{l}{Reduction (26m vs.\ v8x)} & $-67.2\%$ & $-64.8\%$ \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Instance Segmentation Results on AlphaDent (100 Epochs)}
+\label{tab:results}
+\centering
+\begin{adjustbox}{max width=0.48\textwidth}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Input (px)} & \textbf{Box mAP@50} & \textbf{Mask mAP@50} \\
+\midrule
+YOLOv8x-seg (baseline) & 640 & -- & -- \\
+YOLOv8x-seg (baseline) & 960 & 0.4580 & -- \\
+\rowcolor{highlightColor}
+YOLO26m-seg (ours) & 640 & 0.4415 & 0.4298 \\
+\rowcolor{highlightColor}
+YOLO26l-seg (ours) & 960 & -- & -- \\
+\rowcolor{highlightColor}
+YOLO26x-seg (ours) & 960 & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Accuracy--Efficiency Trade-off}
+The headline number is how little accuracy the smaller model gives up. YOLO26m-seg reaches 0.4415 Box mAP@50 and 0.4298 Mask mAP@50, sitting 1.65 points below the YOLOv8x baseline's 0.4580 while using about a third of the parameters and 35.2\% of the compute. For a screening tool that has to run on modest hardware, that is a trade most deployments would take without hesitation. The pipeline also reports structured Mask mAP@50 benchmarks, which the baseline CLI never published in usable form and which matter for pixel-accurate lesion delineation. We expect the larger YOLO26l/YOLO26x runs at 960 px to narrow or close the remaining box-level gap while still costing far less than YOLOv8x at the same resolution. Qualitative predictions across the nine pathology classes are shown in Fig.~\ref{fig:preds}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.48\textwidth]{fig_predictions.png}
+\caption{Qualitative instance segmentation results of the proposed YOLO26 models on AlphaDent test images (nine pathology classes).}
+\label{fig:preds}
+\end{figure}
+
+\subsection{Training Scalability and Robustness}
+DDP scaling behaved close to linearly in practice: 50 epochs on two T4 GPUs took 1.46 hours, about 1.85$\times$ faster than the single-GPU setup. The memory-safe validation routine did the job it was built for. The transient 15.69~GiB allocations that used to abort high-resolution evaluation simply no longer occur, and on the rare occasion an OOM does slip through, the CPU fallback absorbs it and the run finishes rather than dies.
+
+\subsection{Interpretability Analysis}
+Looking across the seven CAM methods, the attributions for correctly detected caries instances concentrate where a dentist would want them to: on the lesion surface and the adjacent enamel margins. The methods have distinct personalities. Eigen-CAM, being gradient-free, stays the most stable under the specular reflections that plague intra-oral photography; HiRes-CAM and Layer-CAM recover the sharpest lesion boundaries; Grad-CAM++ does the best job of separating several lesions on one tooth. Agreement across methods also turned out to be a useful confidence signal in itself. Predictions on which all seven maps coincided spatially were, qualitatively, the more reliable ones, which suggests multi-method XAI can serve as a lightweight clinical audit tool~\cite{adadi2018peeking}.
+
+\section{Discussion}
+The main takeaway is that the price of shrinking from a 71.8M-parameter YOLOv8x to a 23.5M-parameter YOLO26m is small, 1.65 mAP points against a 64.8\% compute saving, which makes chairside and mobile deployment realistic without server-class hardware. It is worth being honest about what the engineering contributions are: DDP orchestration, automated dataset staging, type-safe thresholds, and OOM-resilient validation do not make the model smarter, but they remove exactly the kind of reproducibility failures that stall clinical ML pipelines in practice. Limitations remain. Evaluation is on a single dataset, the 960 px YOLO26l/x and 640 px baseline runs are still completing, and our XAI assessment is qualitative; deletion/insertion faithfulness curves and reader studies with practicing dentists are the obvious next steps.
+
+\section{Conclusion}
+We set out to build a caries detector a clinic could actually run and a clinician could actually question, and the pieces are now in place: a YOLO26 pipeline that keeps near-baseline accuracy (0.4415 vs.\ 0.4580 Box mAP@50) at a third of the size, near-linear multi-GPU training via DDP, validation that heals itself instead of crashing, and a seven-method CAM framework wired to the YOLO26 segmentation outputs. Future work will finish the YOLO26l/YOLO26x 960 px benchmarks, extend evaluation to external intra-oral and radiographic datasets~\cite{uribe2024public}, and put the explanations in front of dentists to quantify their faithfulness and clinical value.
+
+\bibliographystyle{IEEEtran}
+\bibliography{Ref}
+\end{document}
