@@ -1,59 +1,53 @@
 This is BibTeX, Version 0.99d (TeX Live 2025)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: conference_yolo26_dental.aux
-The style file: IEEEtran.bst
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
+The style file: unsrt.bst
+Illegal, another \bibstyle command---line 78 of file conference_yolo26_dental.aux
+ : \bibstyle
+ :          {IEEEtran}
+I'm skipping whatever remains of this command
 Database file #1: Ref.bib
 Warning--entry type for "jocher2023ultralytics" isn't style-file defined
 --line 10 of file Ref.bib
--- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
--- http://www.michaelshell.org/tex/ieeetran/bibtex/
--- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
-
-Done.
 You've used 26 entries,
-            4087 wiz_defined-function locations,
-            952 strings with 12711 characters,
-and the built_in function-call counts, 18422 in all, are:
-= -- 1421
-> -- 568
-< -- 102
-+ -- 298
-- -- 123
-* -- 869
-:= -- 2701
-add.period$ -- 52
+            1791 wiz_defined-function locations,
+            578 strings with 8901 characters,
+and the built_in function-call counts, 6539 in all, are:
+= -- 511
+> -- 403
+< -- 5
++ -- 143
+- -- 117
+* -- 437
+:= -- 1049
+add.period$ -- 76
 call.type$ -- 26
 change.case$ -- 26
-chr.to.int$ -- 228
+chr.to.int$ -- 0
 cite$ -- 26
-duplicate$ -- 1391
-empty$ -- 1517
-format.name$ -- 143
-if$ -- 4298
+duplicate$ -- 287
+empty$ -- 610
+format.name$ -- 117
+if$ -- 1452
 int.to.chr$ -- 0
 int.to.str$ -- 26
-missing$ -- 269
-newline$ -- 103
+missing$ -- 23
+newline$ -- 131
 num.names$ -- 26
-pop$ -- 698
+pop$ -- 100
 preamble$ -- 1
 purify$ -- 0
-quote$ -- 2
-skip$ -- 1427
+quote$ -- 0
+skip$ -- 156
 stack$ -- 0
-substring$ -- 628
-swap$ -- 1048
-text.length$ -- 26
+substring$ -- 353
+swap$ -- 83
+text.length$ -- 5
 text.prefix$ -- 0
-top$ -- 5
-type$ -- 26
+top$ -- 0
+type$ -- 0
 warning$ -- 0
-while$ -- 63
+while$ -- 51
 width$ -- 28
-write$ -- 257
-(There was 1 warning)
+write$ -- 271
+(There was 1 error message)

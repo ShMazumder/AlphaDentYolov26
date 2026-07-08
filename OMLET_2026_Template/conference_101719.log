@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.8)  9 JUL 2026 01:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.8)  9 JUL 2026 00:59
 entering extended mode
- \write18 enabled.
+ restricted \write18 enabled.
  %&-line parsing enabled.
-**conference_yolo26_dental.tex
-(./conference_yolo26_dental.tex
+**conference_101719.tex
+(./conference_101719.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
 (./IEEEtran.cls
@@ -568,27 +568,27 @@ ef
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count316
 \l__pdf_internal_box=\box61
-) (./conference_yolo26_dental.aux)
-\openout1 = `conference_yolo26_dental.aux'.
+) (./conference_101719.aux)
+\openout1 = `conference_101719.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 79.
-LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
 
 -- Lines per column: 56 (exact).
 (/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -615,139 +615,4 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package caption Info: Begin \AtBeginDocument code.
-Package caption Info: hyperref package is loaded.
-Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 79.
- (./conference_yolo26_dental.out) (./conference_yolo26_dental.out)
-\@outlinefile=\write4
-\openout4 = `conference_yolo26_dental.out'.
-
-LaTeX Font Info:    Trying to load font information for U+msa on input line 84.
-
-
-(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 84.
-
-
-(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
-6.
-(/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/ot1pcr.fd
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-)
-Underfull \hbox (badness 10000) in paragraph at lines 102--103
-[]\OT1/ptm/m/n/10 An accuracy--efficiency anal-y-sis show-ing that
- []
-
-
-
-[1{/Users/rohansmac/Library/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap
-/pdftex.map}{/usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/base/8r.en
-c}
-
-
-]
-<fig_pipeline.png, id=127, 218.2554pt x 491.436pt>
-File: fig_pipeline.png Graphic file (type png)
-<use fig_pipeline.png>
-Package pdftex.def Info: fig_pipeline.png  used on input line 117.
-(pdftex.def)             Requested size: 247.6778pt x 557.6933pt.
-
-Underfull \hbox (badness 1430) in paragraph at lines 123--124
-\OT1/ptm/m/n/10 for nine dentist-defined pathol-ogy classes, caries among
- []
-
-
-
-
-
-[2 <./fig_pipeline.png (PNG copy)>]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 140.
-
-
-
-Underfull \hbox (badness 3260) in paragraph at lines 166--167
-[]\OT1/ptm/b/n/10 HiRes-CAM \OT1/ptm/m/n/10 [[]23[]]: element-wise activation--
-gradient
- []
-
-<fig_xai.png, id=163, 1204.5pt x 702.625pt>
-File: fig_xai.png Graphic file (type png)
-<use fig_xai.png>
-Package pdftex.def Info: fig_xai.png  used on input line 175.
-(pdftex.def)             Requested size: 247.6778pt x 144.47862pt.
-
-
-[3]
-
-<fig_predictions.png, id=198, 1204.5pt x 702.625pt>
-File: fig_predictions.png Graphic file (type png)
-<use fig_predictions.png>
-Package pdftex.def Info: fig_predictions.png  used on input line 234.
-(pdftex.def)             Requested size: 247.6778pt x 144.47862pt.
-
-
-[4 <./fig_xai.png (PNG copy)> <./fig_predictions.png (PNG copy)>]
-(./conference_yolo26_dental.bbl
-
-)
-
-** Conference Paper **
-Before submitting the final camera ready copy, remember to:
-
- 1. Manually equalize the lengths of two columns on the last page
- of your paper;
-
- 2. Ensure that any PostScript and/or PDF output post-processing
- uses only Type 1 fonts and that every step in the generation
- process uses the appropriate paper size.
-
-
-
-[5] (./conference_yolo26_dental.aux)
- ***********
-LaTeX2e <2024-11-01> patch level 2
-L3 programming layer <2025-01-18>
- ***********
-Package rerunfilecheck Info: File `conference_yolo26_dental.out' has not change
-d.
-(rerunfilecheck)             Checksum: 57DA61FA26F8A9769DBBB02728D24F3D;2748.
- ) 
-Here is how much of TeX's memory you used:
- 14755 strings out of 474662
- 239208 string characters out of 5751109
- 658422 words of memory out of 5000000
- 37507 multiletter control sequences out of 15000+600000
- 598845 words of font info for 117 fonts, out of 8000000 for 9000
- 319 hyphenation exceptions out of 8191
- 75i,11n,79p,1598b,629s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi1
-0.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mmi7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmmi8.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmr7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmr8.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy9.pfb></Users/rohansmac/Library/texmf/fonts/type1/urw
-/courier/ucrr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/ti
-mes/utmb8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/times/u
-tmbi8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/times/utmr8
-a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/times/utmri8a.pf
-b>
-Output written on conference_yolo26_dental.pdf (5 pages, 502915 bytes).
-PDF statistics:
- 300 PDF objects out of 1000 (max. 8388607)
- 257 compressed objects within 3 object streams
- 73 named destinations out of 1000 (max. 500000)
- 152 words of extra memory for PDF output out of 10000 (max. 10000000)
-
+Package caption Info: Begin \AtBeginDoc

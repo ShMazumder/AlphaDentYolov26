@@ -12,39 +12,68 @@
 \usepackage{array}
 \usepackage{adjustbox}
 \usepackage{hyperref,graphicx,color,float}
+\bibliographystyle{unsrt}
 \definecolor{myblue}{RGB}{10, 150, 200}
 
 \usepackage{cite}
 \usepackage{multirow}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{comment}
 \definecolor{highlightColor}{HTML}{E6FFE6}
 
+\usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
-
+    
 \fancypagestyle{firstpage}{
   \fancyhf{} % Clear all header and footer fields
-  \fancyhead[L]{\small 2026 IEEE International Conference on Optics, Machine Learning and Emerging Technology (OMLET)
- \\ 29 -- 31 October 2026, Nairobi, Kenya}
-  \fancyfoot[L]{\small 979-8-3195-1287-1/26/\$31.00 \copyright2026 IEEE} % Left-align the footer
   \renewcommand{\headrulewidth}{0pt} % Remove the header rule
   \renewcommand{\footrulewidth}{0pt} % Remove the footer rule
 }
 
-\pagestyle{plain} % Apply plain style to other pages
+\pagestyle{empty} % Apply empty style to other pages
 
 \title{Multi-Method Explainability for YOLO26-Based Caries Detection in Intra-oral Photos}
 
-\author
-{\IEEEauthorblockN{First Author Name\textsuperscript{1}, Second Author Name\textsuperscript{2}, Third Author Name\textsuperscript{3},\\ Fourth Author Name\textsuperscript{4}, Fifth Author Name\textsuperscript{5}, Sixth Author Name\textsuperscript{6}}
-\IEEEauthorblockA{\textsuperscript{1,6}Department Name, Institution Name\\ City, Country\\
-\textsuperscript{2,3,4,5}Department Name, Institution Name\\
+\author{
+\IEEEauthorblockN{First Author Name}
+\IEEEauthorblockA{\textit{Department Name} \\
+\textit{Institution Name}\\
 City, Country \\
-\textsuperscript{1}author1@example.com, \textsuperscript{2}author2@example.com,
-\textsuperscript{6}author6@example.com
-}
+author1@example.com}
+\and
+\IEEEauthorblockN{Second Author Name}
+\IEEEauthorblockA{\textit{Department Name} \\
+\textit{Institution Name}\\
+City, Country \\
+author2@example.com}
+\and
+\IEEEauthorblockN{Third Author Name}
+\IEEEauthorblockA{\textit{Department Name} \\
+\textit{Institution Name}\\
+City, Country \\
+author3@example.com}
+\\[0.2cm]
+\IEEEauthorblockN{Fourth Author Name}
+\IEEEauthorblockA{\textit{Department Name} \\
+\textit{Institution Name}\\
+City, Country \\
+author4@example.com}
+\and
+\IEEEauthorblockN{Fifth Author Name}
+\IEEEauthorblockA{\textit{Department Name} \\
+\textit{Institution Name}\\
+City, Country \\
+author5@example.com}
+\and
+\IEEEauthorblockN{Sixth Author Name}
+\IEEEauthorblockA{\textit{Department Name} \\
+\textit{Institution Name}\\
+City, Country \\
+author6@example.com}
 }
 
 \begin{document}
@@ -73,7 +102,7 @@ We address both obstacles together. Starting from the reference YOLOv8 pipeline~
 \item An accuracy--efficiency analysis showing that YOLO26m-seg keeps near-baseline accuracy at roughly one third of the parameters and 35.2\% of the compute of YOLOv8x-seg.
 \end{itemize}
 
-\section{Literature Review}
+\section{Literate Review}
 \textbf{Real-time detection and instance segmentation.} Since the original YOLO reframed detection as a single-pass regression problem~\cite{redmon2016yolo}, the family has iterated quickly: YOLOv8~\cite{jocher2023ultralytics}, YOLOv9 with programmable gradient information~\cite{wang2024yolov9}, the NMS-free end-to-end YOLOv10~\cite{wang2024yolov10}, YOLO11~\cite{ultralytics2024yolo11}, the attention-centric YOLOv12~\cite{tian2025yolov12}, and most recently YOLO26, which unifies detection, segmentation, pose, and classification in one end-to-end design~\cite{jocher2026yolo26}. On the segmentation side, Mask R-CNN~\cite{he2017maskrcnn} set the two-stage standard, while YOLACT~\cite{bolya2019yolact} showed that prototype masks could deliver real-time instance segmentation, the idea modern YOLO segmentation heads still build on.
 
 \textbf{Deep learning in dental imaging.} Convolutional networks reached expert-level tooth detection and numbering on panoramic radiographs years ago~\cite{tuzoff2019tooth}, and recent YOLOv8 studies have moved into genuinely clinical territory: interproximal caries in bitewings~\cite{bayati2025advanced}, pulp involvement in primary molars~\cite{sohrabi2025deep}, and caries classification~\cite{agulan2024detection}. Progress, however, is bottlenecked by data. Uribe et al.\ survey the public dental dataset landscape and find it thin~\cite{uribe2024public}. AlphaDent~\cite{sosnin2025alphadent} helps by contributing densely annotated intra-oral photographs across nine pathology classes, and open frameworks such as SegmentAnyTooth target tooth enumeration and segmentation on the same modality~\cite{nguyen2025segmentanytooth}.
@@ -90,20 +119,21 @@ Fig.~\ref{fig:pipeline} gives an overview of the pipeline: automated dataset sta
 \label{fig:pipeline}
 \end{figure}
 
-\subsection{Dataset and Preprocessing}
+\subsection{Data Collection}
 We use AlphaDent~\cite{sosnin2025alphadent}, a set of high-resolution intra-oral photographs annotated with polygon instance masks for nine dentist-defined pathology classes, caries among them. A small but instructive detail: symbolically linking the label directory from a read-only competition mount seems harmless, but YOLO writes \texttt{.cache} scan files next to the labels, so training crashes. The pipeline therefore copies images, labels, and the dataset YAML recursively into a writable working directory (\texttt{shutil.copytree(..., dirs\_exist\_ok=True)}), falling back to a Zenodo download when the competition mount is absent. We train at two input scales, 640$\times$640 (YOLO26m) and 960$\times$960 (YOLO26l, YOLO26x), matching the two baseline YOLOv8x resolutions.
 
-\subsection{YOLO26 Architecture}
+\subsection{Analysis}
+\subsubsection{YOLO26 Architecture}
 YOLO26~\cite{jocher2026yolo26} is a unified, end-to-end real-time vision model family. We use its instance segmentation variants, whose \texttt{Segment26} head predicts prototype masks and per-instance coefficients in the YOLACT style~\cite{bolya2019yolact}, decoded jointly with box regression and nine-class logits. The size difference from the baseline is what makes chairside deployment plausible: YOLOv8x-seg carries 71.8M parameters and 344.1 GFLOPs, while YOLO26m-seg needs 23.5M parameters and 121.2 GFLOPs (fused), reductions of 67.2\% and 64.8\%.
 
-\subsection{Dynamic Multi-GPU Training with DDP}
+\subsubsection{Dynamic Multi-GPU Training with DDP}
 The baseline scripts hard-code \texttt{device=[0]}, so a second GPU sits idle unless the user edits the source. We instead enumerate whatever is available at runtime,
 \begin{equation}
 \mathcal{D} = \{0, 1, \dots, N_{\mathrm{GPU}}-1\},
 \end{equation}
 and launch DDP training across all of it. Validation and prediction are deliberately routed back to a single device ($\mathcal{D}_0$): DDP validation loops are prone to multi-threaded metric-aggregation conflicts, and a single device sidesteps them entirely. On two Tesla T4 GPUs, 50 epochs finish in 1.46 hours, roughly a 1.85$\times$ speedup over the single-GPU configuration.
 
-\subsection{Self-Healing Memory-Safe Validation}
+\subsubsection{Self-Healing Memory-Safe Validation}
 This component exists because validation kept crashing. AlphaDent images are very large, and with \texttt{save\_json} or \texttt{save\_txt} enabled, YOLO reconstructs masks at full resolution via bilinear interpolation; on multi-instance images this transiently allocates up to 15.69~GiB and kills the GPU kernel. A naive retreat to the CPU fails differently, since holding all the scaled float tensors in system RAM invites the OS OOM killer instead. The routine we settled on does three things: it disables raw-prediction dumping so metrics are computed on downscaled mask grids, it flushes memory (\texttt{gc.collect()}, \texttt{torch.cuda.empty\_cache()}) before evaluation, and it wraps the whole call in a fallback that catches CUDA OOM errors and re-runs on CPU, as summarized in Algorithm~\ref{alg:selfheal}.
 
 \begin{algorithm}[htbp]
@@ -125,7 +155,7 @@ This component exists because validation kept crashing. AlphaDent images are ver
 
 We also fixed a quiet but severe bug in the baseline CLI: \texttt{--conf} and \texttt{--iou} were declared as \texttt{type=int}, which truncates a threshold like 0.001 to 0. All thresholds in our pipeline are plain, type-safe Python floats.
 
-\subsection{Explainability: The YOLOExplainer Framework}
+\subsubsection{Explainability: The YOLOExplainer Framework}
 A prediction a clinician cannot inspect is a prediction they cannot trust, so we built explainability into the pipeline rather than bolting it on. \textit{YOLOExplainer} registers forward and backward hooks on a chosen intermediate YOLO26 layer, by default the final \texttt{C3k2} neck block (layer index 22), to capture feature activations $A^k$. It then back-propagates the summed per-class score from the \texttt{Segment26} head output to obtain gradients $\partial y^c / \partial A^k$, from which class activation maps are computed. If no target class is given, the module explains whichever of the nine pathology channels has the largest aggregate score. Generic CAM wrappers do not handle modern YOLO segmentation outputs; this one operates directly on \texttt{Segment26} predictions and supports seven attribution methods:
 
 \begin{enumerate}
