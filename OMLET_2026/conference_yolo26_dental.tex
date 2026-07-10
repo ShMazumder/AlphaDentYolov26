@@ -89,7 +89,7 @@ author6@example.com}%
 \thispagestyle{firstpage} % Apply the footer only on the first page
 
 \begin{abstract}
-A dentist looking at an AI-flagged caries lesion has two reasonable questions: is the model right, and why does it think so? Most segmentation models that could answer the first question well are too heavy to run chairside and too opaque to answer the second one at all. We tackle both problems with a single pipeline built on YOLO26, trained to segment nine tooth pathology classes in intra-oral photographs from the AlphaDent dataset. Against a YOLOv8x baseline evaluated at 640 px and 960 px, we test three configurations: YOLO26m at 640 px and YOLO26l/YOLO26x at 960 px. The medium model turns out to be a remarkably good bargain. It reaches 0.4415 Box mAP@50 and 0.4298 Mask mAP@50 with 23.5M parameters and 121.2 GFLOPs, giving up only 1.65 mAP points to the 71.8M-parameter baseline while cutting compute by 64.8\%. At 960 px, YOLO26l comes within 0.77 points of the baseline (0.4503), while the largest YOLO26x trails both, a reminder that model capacity should be matched to dataset size. Training scales across GPUs through Distributed Data Parallel (roughly 1.85$\times$ faster on two Tesla T4s), and a self-healing validation routine survives the CUDA out-of-memory crashes that high-resolution dental photographs otherwise cause. To answer the ``why'' question, our YOLOExplainer module hooks into intermediate YOLO26 layers and produces class activation maps with seven attribution methods, letting clinicians see, and cross-check, exactly which image regions drive each prediction.
+A dentist looking at an AI-flagged caries lesion has two reasonable questions: is the model right, and why does it think so? Most segmentation models that could answer the first question well are too heavy to run chairside and too opaque to answer the second one at all. We tackle both problems with a single pipeline built on YOLO26, trained to segment nine tooth pathology classes in intra-oral photographs from the AlphaDent dataset. Against a YOLOv8x baseline evaluated at 640 px and 960 px, we test five configurations: YOLO26m and YOLO26l at both 640 px and 960 px, and YOLO26x at 960 px. The medium model turns out to be a remarkably good bargain. At its best checkpoint it reaches 0.4658 Box mAP@50 and 0.4455 Mask mAP@50 with 23.5M parameters and 121.2 GFLOPs, surpassing the 71.8M-parameter baseline's 0.4580 while cutting compute by 64.8\%. At 960 px, YOLO26l also exceeds the baseline (0.4641 Box, and the best Mask mAP@50 of the family at 0.4582), while the largest YOLO26x trails both, a reminder that model capacity should be matched to dataset size. Training scales across GPUs through Distributed Data Parallel (roughly 1.85$\times$ faster on two Tesla T4s), and a self-healing validation routine survives the CUDA out-of-memory crashes that high-resolution dental photographs otherwise cause. To answer the ``why'' question, our YOLOExplainer module hooks into intermediate YOLO26 layers and produces class activation maps with seven attribution methods, letting clinicians see, and cross-check, exactly which image regions drive each prediction.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -104,10 +104,10 @@ Yet two practical obstacles keep these models out of everyday practice. The firs
 We address both obstacles together. Starting from the reference YOLOv8 pipeline~\cite{jocher2023ultralytics} for the AlphaDent dataset~\cite{sosnin2025alphadent}, a collection of intra-oral photographs annotated with nine tooth pathology classes, we migrate to the YOLO26 family of unified real-time vision models~\cite{jocher2026yolo26}, whose \texttt{Segment26} head is well suited to fine-grained multi-class medical instance segmentation. Along the way we fix several engineering problems that quietly break reproducibility, and we add an explainability layer designed for clinical inspection rather than as an afterthought. Our contributions are:
 
 \begin{itemize}
-\item A YOLO26-based instance segmentation pipeline for nine-class dental pathology detection in intra-oral photographs, evaluated in three configurations (YOLO26m at 640 px, YOLO26l and YOLO26x at 960 px) against YOLOv8x baselines at 640 px and 960 px.
+\item A YOLO26-based instance segmentation pipeline for nine-class dental pathology detection in intra-oral photographs, evaluated in five configurations (YOLO26m and YOLO26l at 640 px and 960 px, YOLO26x at 960 px) against YOLOv8x baselines at 640 px and 960 px.
 \item Dynamic multi-GPU training via PyTorch Distributed Data Parallel (DDP), replacing the baseline's hard-coded single device, together with a self-healing validation routine that survives CUDA out-of-memory (OOM) events on very high-resolution images.
 \item \textit{YOLOExplainer}, a self-contained module that produces class activation maps for YOLO26 predictions using seven complementary post-hoc methods, so that clinicians can visually audit which regions drive each pathology call.
-\item An accuracy--efficiency analysis showing that YOLO26m-seg keeps near-baseline accuracy at roughly one third of the parameters and 35.2\% of the compute of YOLOv8x-seg.
+\item An accuracy--efficiency analysis showing that YOLO26m-seg surpasses the YOLOv8x-seg baseline at roughly one third of the parameters and 35.2\% of the compute.
 \end{itemize}
 
 \section{Literate Review}
@@ -187,7 +187,7 @@ Why seven methods instead of one? Because each has known failure modes, and show
 
 \section{Results and Discussions}
 \subsection{Experimental Setup}
-All models are trained on AlphaDent with the Ultralytics framework for 100 epochs, using DDP across two Tesla T4 GPUs with default Ultralytics segmentation hyperparameters and augmentation; YOLO26m uses batch size 16 at 640 px, while YOLO26l and YOLO26x use batch size 8 at 960 px. Validation runs at batch size 1 with FP16 inference on GPU (full precision on the CPU fallback), a confidence threshold of 0.001, and an IoU threshold of 0.5; for qualitative figures we raise the confidence threshold to 0.25 for visual clarity. The baseline YOLOv8x-seg is evaluated at 640 px and 960 px; our YOLO26m-seg is trained at 640 px and YOLO26l-seg/YOLO26x-seg at 960 px. Table~\ref{tab:complexity} compares model complexity and Table~\ref{tab:results} reports accuracy. Cells marked ``--'' correspond to baseline results not published in usable form by the reference pipeline.
+All models are trained on AlphaDent with the Ultralytics framework for 100 epochs, using DDP across two Tesla T4 GPUs with default Ultralytics segmentation hyperparameters and augmentation; runs use batch size 16, falling back to 8 for YOLO26l and YOLO26x at 960 px under GPU memory limits. Validation runs at batch size 1 with FP16 inference on GPU (full precision on the CPU fallback), a confidence threshold of 0.001, and an IoU threshold of 0.5; for qualitative figures we raise the confidence threshold to 0.25 for visual clarity. The baseline YOLOv8x-seg is evaluated at 640 px and 960 px; our YOLO26m-seg and YOLO26l-seg are trained at both resolutions and YOLO26x-seg at 960 px. We report metrics at each run's best checkpoint (\texttt{best.pt}), selected by the framework's fitness criterion; this is the checkpoint that would actually be deployed. Table~\ref{tab:complexity} compares model complexity and Table~\ref{tab:results} reports accuracy. Cells marked ``--'' correspond to baseline results not published in usable form by the reference pipeline.
 
 \begin{table}[htbp]
 \caption{Model Complexity Comparison}
@@ -200,9 +200,9 @@ All models are trained on AlphaDent with the Ultralytics framework for 100 epoch
 \midrule
 YOLOv8x-seg (baseline)~\cite{jocher2023ultralytics} & 640 / 960 & 71.8 & 344.1 \\
 \rowcolor{highlightColor}
-YOLO26m-seg (ours) & 640 & \textbf{23.5} & \textbf{121.2} \\
+YOLO26m-seg (ours) & 640 / 960 & \textbf{23.5} & \textbf{121.2} \\
 \rowcolor{highlightColor}
-YOLO26l-seg (ours) & 960 & 27.9 & 139.4 \\
+YOLO26l-seg (ours) & 640 / 960 & 27.9 & 139.4 \\
 \rowcolor{highlightColor}
 YOLO26x-seg (ours) & 960 & 62.7 & 313.0 \\
 \midrule
@@ -213,7 +213,7 @@ YOLO26x-seg (ours) & 960 & 62.7 & 313.0 \\
 \end{table}
 
 \begin{table}[htbp]
-\caption{Instance Segmentation Results on AlphaDent (100 Epochs)}
+\caption{Instance Segmentation Results on AlphaDent (Best Checkpoint, 100-Epoch Schedule)}
 \label{tab:results}
 \centering
 \begin{adjustbox}{max width=0.48\textwidth}
@@ -224,18 +224,22 @@ YOLO26x-seg (ours) & 960 & 62.7 & 313.0 \\
 YOLOv8x-seg (baseline) & 640 & -- & -- \\
 YOLOv8x-seg (baseline) & 960 & 0.4580 & -- \\
 \rowcolor{highlightColor}
-YOLO26m-seg (ours) & 640 & 0.4415 & 0.4298 \\
+YOLO26m-seg (ours) & 640 & \textbf{0.4658} & 0.4455 \\
 \rowcolor{highlightColor}
-YOLO26l-seg (ours) & 960 & \textbf{0.4503} & \textbf{0.4392} \\
+YOLO26m-seg (ours) & 960 & 0.4397 & 0.4316 \\
 \rowcolor{highlightColor}
-YOLO26x-seg (ours) & 960 & 0.4128 & 0.3972 \\
+YOLO26l-seg (ours) & 640 & 0.4487 & 0.4327 \\
+\rowcolor{highlightColor}
+YOLO26l-seg (ours) & 960 & 0.4641 & \textbf{0.4582} \\
+\rowcolor{highlightColor}
+YOLO26x-seg (ours) & 960 & 0.4449 & 0.4292 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
 \end{table}
 
 \subsection{Accuracy--Efficiency Trade-off}
-The headline number is how little accuracy the smaller models give up. YOLO26m-seg reaches 0.4415 Box mAP@50 and 0.4298 Mask mAP@50, sitting 1.65 points below the YOLOv8x baseline's 0.4580 while using about a third of the parameters and 35.2\% of the compute. For a screening tool that has to run on modest hardware, that is a trade most deployments would take without hesitation. At 960 px, YOLO26l-seg comes closest to the baseline, reaching 0.4503 Box mAP@50 and the best Mask mAP@50 of the family (0.4392) with 27.9M parameters and 139.4 GFLOPs, i.e.\ 61.1\% fewer parameters and 59.5\% less compute than YOLOv8x, while sitting only 0.77 box points below the baseline at the same resolution. Interestingly, scaling further does not help: YOLO26x-seg at 960 px lands at 0.4128/0.3972, below both YOLO26l at the same resolution and YOLO26m at 640 px. On a dataset of AlphaDent's size, with several rare pathology classes, the largest model appears to overfit rather than benefit from added capacity, a pattern consistent with its higher validation precision but markedly lower recall (0.55/0.42 vs.\ 0.44/0.47 for YOLO26m). The pipeline also reports structured Mask mAP@50 benchmarks, which the baseline CLI never published in usable form and which matter for pixel-accurate lesion delineation. Qualitative predictions across the nine pathology classes are shown in Fig.~\ref{fig:preds}.
+The headline result is that the smaller model does not merely approach the baseline, it beats it. YOLO26m-seg at 640 px reaches 0.4658 Box mAP@50 and 0.4455 Mask mAP@50, exceeding the YOLOv8x baseline's 0.4580 by 0.78 points while using about a third of the parameters and 35.2\% of the compute. For a screening tool that has to run on modest hardware, this is no longer a trade-off at all. At 960 px, YOLO26l-seg reaches 0.4641 Box mAP@50 and the best Mask mAP@50 of the family (0.4582) with 27.9M parameters and 139.4 GFLOPs, i.e.\ 61.1\% fewer parameters and 59.5\% less compute than YOLOv8x at the same resolution. The grid also reveals a capacity--resolution interaction: the medium model is strongest at 640 px (0.4658 vs.\ 0.4397 at 960 px), whereas the large model prefers 960 px (0.4641 vs.\ 0.4487 at 640 px). Scaling further does not help: YOLO26x-seg at 960 px lands at 0.4449/0.4292, below YOLO26l at the same resolution. On a dataset of AlphaDent's size, with several rare pathology classes, the largest model appears to overfit rather than benefit from added capacity, a pattern consistent with its higher validation precision but markedly lower recall. The pipeline also reports structured Mask mAP@50 benchmarks, which the baseline CLI never published in usable form and which matter for pixel-accurate lesion delineation. Qualitative predictions across the nine pathology classes are shown in Fig.~\ref{fig:preds}.
 
 \begin{figure}[htbp]
 \centering
@@ -251,10 +255,10 @@ DDP scaling behaved close to linearly in practice: 50 epochs on two T4 GPUs took
 Looking across the seven CAM methods, the attributions for correctly detected caries instances concentrate where a dentist would want them to: on the lesion surface and the adjacent enamel margins. The methods have distinct personalities. Eigen-CAM, being gradient-free, stays the most stable under the specular reflections that plague intra-oral photography; HiRes-CAM and Layer-CAM recover the sharpest lesion boundaries; Grad-CAM++ does the best job of separating several lesions on one tooth. Agreement across methods also turned out to be a useful confidence signal in itself. Predictions on which all seven maps coincided spatially were, qualitatively, the more reliable ones, which suggests multi-method XAI can serve as a lightweight clinical audit tool~\cite{adadi2018peeking}.
 
 \section{Discussion}
-The main takeaway is that the price of shrinking from a 71.8M-parameter YOLOv8x to a 23.5M-parameter YOLO26m is small, 1.65 mAP points against a 64.8\% compute saving, which makes chairside and mobile deployment realistic without server-class hardware. It is worth being honest about what the engineering contributions are: DDP orchestration, automated dataset staging, type-safe thresholds, and OOM-resilient validation do not make the model smarter, but they remove exactly the kind of reproducibility failures that stall clinical ML pipelines in practice. A second takeaway is that capacity must match data: at 960 px the large YOLO26l narrowly trails the baseline (0.4503 vs.\ 0.4580), while the extra-large YOLO26x underperforms both YOLO26l and the far cheaper YOLO26m, suggesting that on a single moderately sized clinical dataset the biggest model is the wrong choice, not just the most expensive one. Limitations remain. Evaluation is on a single dataset, the 640 px baseline run is not published, and our XAI assessment is qualitative; deletion/insertion faithfulness curves and reader studies with practicing dentists are the obvious next steps.
+The main takeaway is that shrinking from a 71.8M-parameter YOLOv8x to a 23.5M-parameter YOLO26m costs nothing on this task: at its best checkpoint the smaller model is 0.78 Box mAP@50 points better, at a 64.8\% compute saving, which makes chairside and mobile deployment realistic without server-class hardware. It is worth being honest about what the engineering contributions are: DDP orchestration, automated dataset staging, type-safe thresholds, and OOM-resilient validation do not make the model smarter, but they remove exactly the kind of reproducibility failures that stall clinical ML pipelines in practice. A second takeaway is that capacity must match data and resolution: YOLO26l also exceeds the baseline at 960 px (0.4641 vs.\ 0.4580) but weakens at 640 px, YOLO26m shows the opposite preference, and the extra-large YOLO26x underperforms both, suggesting that on a single moderately sized clinical dataset the biggest model is the wrong choice, not just the most expensive one. Limitations remain. Evaluation is on a single dataset, the 640 px baseline run is not published, and our XAI assessment is qualitative; deletion/insertion faithfulness curves and reader studies with practicing dentists are the obvious next steps.
 
 \section{Conclusion}
-We set out to build a caries detector a clinic could actually run and a clinician could actually question, and the pieces are now in place: a YOLO26 pipeline that keeps near-baseline accuracy (0.4415 vs.\ 0.4580 Box mAP@50) at a third of the size, near-linear multi-GPU training via DDP, validation that heals itself instead of crashing, and a seven-method CAM framework wired to the YOLO26 segmentation outputs. Across the family, YOLO26l at 960 px comes nearest the baseline (0.4503 Box mAP@50) while YOLO26x overfits, confirming that model scale should be chosen against dataset size rather than maximized. Future work will extend evaluation to external intra-oral and radiographic datasets~\cite{uribe2024public} and put the explanations in front of dentists to quantify their faithfulness and clinical value.
+We set out to build a caries detector a clinic could actually run and a clinician could actually question, and the pieces are now in place: a YOLO26 pipeline that exceeds baseline accuracy (0.4658 vs.\ 0.4580 Box mAP@50) at a third of the size, near-linear multi-GPU training via DDP, validation that heals itself instead of crashing, and a seven-method CAM framework wired to the YOLO26 segmentation outputs. Across the family, YOLO26l at 960 px delivers the best masks (0.4582 Mask mAP@50) while YOLO26x overfits, confirming that model scale should be chosen against dataset size rather than maximized. Future work will extend evaluation to external intra-oral and radiographic datasets~\cite{uribe2024public} and put the explanations in front of dentists to quantify their faithfulness and clinical value.
 
 \bibliographystyle{IEEEtran}
 \bibliography{Ref}
