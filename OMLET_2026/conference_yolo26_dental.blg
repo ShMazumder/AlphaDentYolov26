@@ -1,14 +1,16 @@
-This is BibTeX, Version 0.99d (TeX Live 2025)
+This is BibTeX, Version 0.99e
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: conference_yolo26_dental.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
 The style file: unsrt.bst
-Illegal, another \bibstyle command---line 78 of file conference_yolo26_dental.aux
+Illegal, another \bibstyle command---line 79 of file conference_yolo26_dental.aux
  : \bibstyle
  :          {IEEEtran}
 I'm skipping whatever remains of this command
+Reallocating 'name_of_file' (item size: 1) to 4 items.
 Database file #1: Ref.bib
 Warning--entry type for "jocher2023ultralytics" isn't style-file defined
---line 10 of file Ref.bib
+--line 19 of file Ref.bib
 You've used 26 entries,
             1791 wiz_defined-function locations,
             578 strings with 8901 characters,
