@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.11)  11 JUL 2026 13:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.11)  11 JUL 2026 14:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -709,7 +709,7 @@ rs/ShMazumder/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
 
 
 ]
-<fig_pipeline.png, id=126, 218.2554pt x 491.436pt>
+<fig_pipeline.png, id=130, 218.2554pt x 491.436pt>
 File: fig_pipeline.png Graphic file (type png)
 <use fig_pipeline.png>
 Package pdftex.def Info: fig_pipeline.png  used on input line 125.
@@ -728,13 +728,13 @@ Underfull \hbox (badness 3260) in paragraph at lines 174--175
 gradient
  []
 
-<fig_xai.png, id=162, 1204.5pt x 702.625pt>
+<fig_xai.png, id=166, 1204.5pt x 702.625pt>
 File: fig_xai.png Graphic file (type png)
 <use fig_xai.png>
 Package pdftex.def Info: fig_xai.png  used on input line 183.
 (pdftex.def)             Requested size: 247.6778pt x 144.47862pt.
 [3]
-<fig_predictions.png, id=196, 1204.5pt x 702.625pt>
+<fig_predictions.png, id=202, 1204.5pt x 702.625pt>
 File: fig_predictions.png Graphic file (type png)
 <use fig_predictions.png>
 Package pdftex.def Info: fig_predictions.png  used on input line 246.
@@ -761,16 +761,16 @@ L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `conference_yolo26_dental.out' has not change
 d.
-(rerunfilecheck)             Checksum: 57DA61FA26F8A9769DBBB02728D24F3D;2748.
+(rerunfilecheck)             Checksum: 30F3DE082FA6E7D8C2D6C8FC3879A32D;2983.
  ) 
 Here is how much of TeX's memory you used:
- 14793 strings out of 467871
- 241965 string characters out of 5415956
- 675323 words of memory out of 5000000
- 43381 multiletter control sequences out of 15000+600000
+ 14797 strings out of 467871
+ 242024 string characters out of 5415956
+ 676410 words of memory out of 5000000
+ 43383 multiletter control sequences out of 15000+600000
  667729 words of font info for 121 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,11n,84p,1668b,636s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,84p,1800b,636s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/ShMazumder/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
 s/cm/cmmi10.pfb><C:/Users/ShMazumder/AppData/Local/Programs/MiKTeX/fonts/type1/
 public/amsfonts/cm/cmmi7.pfb><C:/Users/ShMazumder/AppData/Local/Programs/MiKTeX
@@ -789,9 +789,9 @@ zumder/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/User
 s/ShMazumder/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:
 /Users/ShMazumder/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.p
 fb>
-Output written on conference_yolo26_dental.pdf (6 pages, 535682 bytes).
+Output written on conference_yolo26_dental.pdf (6 pages, 539107 bytes).
 PDF statistics:
- 300 PDF objects out of 1000 (max. 8388607)
- 74 named destinations out of 1000 (max. 500000)
- 152 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 310 PDF objects out of 1000 (max. 8388607)
+ 76 named destinations out of 1000 (max. 500000)
+ 160 words of extra memory for PDF output out of 10000 (max. 10000000)
 

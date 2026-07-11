@@ -3,7 +3,7 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: conference_yolo26_dental.aux
 Reallocating 'name_of_file' (item size: 1) to 6 items.
 The style file: unsrt.bst
-Illegal, another \bibstyle command---line 79 of file conference_yolo26_dental.aux
+Illegal, another \bibstyle command---line 81 of file conference_yolo26_dental.aux
  : \bibstyle
  :          {IEEEtran}
 I'm skipping whatever remains of this command
