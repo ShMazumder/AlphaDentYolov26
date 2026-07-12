@@ -274,6 +274,35 @@ YOLO26l-seg (ours) & 960 & \textbf{0.6966} & \textbf{0.6913} \\
 \end{adjustbox}
 \end{table}
 
+\subsection{Per-Class Breakdown and the Caries Gap}
+The aggregate mAP hides a clinically important asymmetry. Table~\ref{tab:perclass} reports per-class Mask mAP@50 for YOLO26m at both resolutions. The model is strong on the visually salient, well-represented classes --- Abrasion (0.81/0.82), Filling (0.67/0.72), Crown (0.86/0.89) --- but weak precisely where it matters most: the six caries subclasses score between 0.005 and 0.53, and their recall is low throughout (0.05--0.51). The headline 0.4455 average is therefore carried by the non-caries classes; caries detection, the titular task, remains the open problem. The pattern tracks class support (Caries-4 and Caries-6 have only 4--5 validation instances), which argues for the merged four-class protocol and for targeted data collection on the rarer caries categories rather than added model capacity.
+
+\begin{table}[htbp]
+\caption{Per-Class Mask mAP@50 for YOLO26m-seg (nine-class protocol). Caries subclasses (rows 4--9) are the weak point.}
+\label{tab:perclass}
+\centering
+\begin{adjustbox}{max width=0.48\textwidth}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Class} & \textbf{Val inst.} & \textbf{Mask mAP@50 (640)} & \textbf{Mask mAP@50 (960)} \\
+\midrule
+Abrasion & 409 & \textbf{0.812} & \textbf{0.822} \\
+Filling  & 186 & 0.667 & 0.718 \\
+Crown    & 19  & 0.860 & 0.887 \\
+\midrule
+Caries-1 & 62 & 0.385 & 0.330 \\
+Caries-2 & 73 & 0.227 & 0.271 \\
+Caries-3 & 33 & 0.107 & 0.035 \\
+Caries-4 & 4  & 0.495 & 0.268 \\
+Caries-5 & 81 & 0.472 & 0.527 \\
+Caries-6 & 5  & 0.005 & 0.028 \\
+\midrule
+\textbf{All (9 classes)} & 872 & 0.448 & 0.432 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
 \subsection{Training Scalability and Robustness}
 DDP scaling behaved close to linearly in practice: 50 epochs on two T4 GPUs took 1.46 hours, about 1.85$\times$ faster than the single-GPU setup (a sub-linear 0.93 scaling efficiency on two GPUs). The memory-safe validation routine did the job it was built for. The transient 15.69~GiB allocations that used to abort high-resolution evaluation simply no longer occur, and on the rare occasion an OOM does slip through, the CPU fallback absorbs it and the run finishes rather than dies.
 
