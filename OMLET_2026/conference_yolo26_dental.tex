@@ -278,13 +278,13 @@ YOLO26l-seg (ours) & 960 & \textbf{0.6966} & \textbf{0.6913} \\
 DDP scaling behaved close to linearly in practice: 50 epochs on two T4 GPUs took 1.46 hours, about 1.85$\times$ faster than the single-GPU setup (a sub-linear 0.93 scaling efficiency on two GPUs). The memory-safe validation routine did the job it was built for. The transient 15.69~GiB allocations that used to abort high-resolution evaluation simply no longer occur, and on the rare occasion an OOM does slip through, the CPU fallback absorbs it and the run finishes rather than dies.
 
 \subsection{Interpretability: Qualitative Observations}
-Looking across the seven CAM methods, the attributions for correctly detected caries instances concentrate where a dentist would want them to: on the lesion surface and the adjacent enamel margins. The methods have distinct personalities. Eigen-CAM, being gradient-free, stays the most stable under the specular reflections that plague intra-oral photography; HiRes-CAM and Layer-CAM recover the sharpest lesion boundaries; Grad-CAM++ does the best job of separating several lesions on one tooth.
+Looking across the CAM methods, the attributions for correctly detected caries instances concentrate where a dentist would want them to: on the lesion surface and the adjacent enamel margins. Eigen-CAM, being gradient-free, stays the most stable under the specular reflections that plague intra-oral photography and yields the cleanest lesion-centred maps; the gradient-based methods, which as shown below coincide on this architecture, produce a single shared, noisier attribution pattern.
 
 \subsection{Quantitative XAI Faithfulness}
-We move beyond visual inspection with a causal faithfulness evaluation on 30 validation images per configuration. Pixels are progressively removed (deletion) or revealed (insertion) in CAM-importance order over 20 steps, and the resulting confidence curve is integrated: a faithful map yields a \emph{low} deletion AUC, because removing the pixels it deems salient collapses the prediction quickly, and a \emph{high} insertion AUC, because revealing them restores confidence quickly. Table~\ref{tab:faith} pools these AUCs per method across all five configurations. The gradient-free Eigen-CAM is the only method with a positive insertion-minus-deletion margin ($+0.136$), combining the best insertion AUC (0.633) and the lowest deletion AUC (0.497). The six gradient-based methods cluster together and, on this task, are markedly less causally faithful; Grad-CAM++ is the weakest and also the least stable (deletion std 0.573). Fig.~\ref{fig:faith} shows the full per-method distributions. The result is clinically convenient: the method that is most robust to specular reflection is also the most faithful, making Eigen-CAM a sound default for a chairside audit view. Two caveats apply: with $n{=}30$ images the per-method AUC spread is wide, so differences among the gradient-based methods are not statistically separated; and under the summed-score attribution target used for this table, HiRes-CAM and Layer-CAM coincide, an artifact that a localized-score variant in our released code removes.
+We move beyond visual inspection with a causal faithfulness evaluation on 30 validation images per configuration. Pixels are progressively removed (deletion) or revealed (insertion) in CAM-importance order over 20 steps, and the resulting confidence curve is integrated: a faithful map yields a \emph{low} deletion AUC, because removing the pixels it deems salient collapses the prediction quickly, and a \emph{high} insertion AUC, because revealing them restores confidence quickly. Table~\ref{tab:faith} pools these AUCs per method across all five configurations. A notable architectural finding emerges: at the YOLO26 neck the class-score gradient is non-negative, so several gradient-based CAMs coincide \emph{exactly} --- HiRes-CAM equals Layer-CAM (Layer-CAM's positive-gradient clamp becomes a no-op) and Grad-CAM equals Grad-CAM++ --- collapsing the seven nominal methods into three distinct behaviours. Among them the gradient-free Eigen-CAM is the most faithful by a clear margin: the best insertion AUC (0.633), the lowest deletion AUC (0.497), and by far the largest insertion-minus-deletion margin ($+0.136$), against near-neutral margins ($\leq\!0.03$) for the gradient family. Fig.~\ref{fig:faith} shows the full per-method distributions. The result is clinically convenient: the method most robust to specular reflection is also the most faithful, making Eigen-CAM a sound default for a chairside audit view. With $n{=}30$ images the per-method AUC spread is wide, so differences \emph{within} the gradient family are not statistically separated.
 
 \begin{table}[htbp]
-\caption{Pooled XAI Faithfulness on AlphaDent (mean $\pm$ std over 30 images $\times$ 5 configurations)}
+\caption{Pooled XAI faithfulness on AlphaDent (mean $\pm$ std over 30 images $\times$ 5 configurations). At the YOLO26 neck the class gradient is non-negative, so several CAMs coincide \emph{exactly} (marked ``$\equiv$''); the seven nominal methods reduce to three distinct behaviours.}
 \label{tab:faith}
 \centering
 \begin{adjustbox}{max width=0.48\textwidth}
@@ -293,13 +293,11 @@ We move beyond visual inspection with a causal faithfulness evaluation on 30 val
 \textbf{Method} & \textbf{Deletion AUC}\,$\downarrow$ & \textbf{Insertion AUC}\,$\uparrow$ & \textbf{Ins.$-$Del.} \\
 \midrule
 \rowcolor{highlightColor}
-Eigen-CAM & \textbf{0.497} $\pm$ 0.378 & \textbf{0.633} $\pm$ 0.293 & $\mathbf{+0.136}$ \\
-EigenGrad-CAM & 0.549 $\pm$ 0.281 & 0.529 $\pm$ 0.242 & $-0.020$ \\
-HiRes-CAM & 0.587 $\pm$ 0.374 & 0.488 $\pm$ 0.217 & $-0.099$ \\
-Layer-CAM & 0.587 $\pm$ 0.374 & 0.488 $\pm$ 0.217 & $-0.099$ \\
-XGrad-CAM & 0.586 $\pm$ 0.380 & 0.487 $\pm$ 0.221 & $-0.100$ \\
-Grad-CAM & 0.590 $\pm$ 0.379 & 0.482 $\pm$ 0.218 & $-0.108$ \\
-Grad-CAM++ & 0.608 $\pm$ 0.573 & 0.487 $\pm$ 0.222 & $-0.122$ \\
+Eigen-CAM (gradient-free) & \textbf{0.497} $\pm$ 0.378 & \textbf{0.633} $\pm$ 0.293 & $\mathbf{+0.136}$ \\
+EigenGrad-CAM & 0.544 $\pm$ 0.144 & 0.557 $\pm$ 0.162 & $+0.013$ \\
+HiRes-CAM $\equiv$ Layer-CAM & 0.533 $\pm$ 0.127 & 0.559 $\pm$ 0.133 & $+0.026$ \\
+Grad-CAM $\equiv$ Grad-CAM++ & 0.543 $\pm$ 0.177 & 0.552 $\pm$ 0.165 & $+0.009$ \\
+XGrad-CAM & 0.546 $\pm$ 0.173 & 0.551 $\pm$ 0.165 & $+0.005$ \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -313,7 +311,7 @@ Grad-CAM++ & 0.608 $\pm$ 0.573 & 0.487 $\pm$ 0.222 & $-0.122$ \\
 \end{figure}
 
 \subsection{Inter-Method Agreement}
-We also quantify how much the seven methods agree, per image, as the mean pairwise Spearman correlation between their heatmaps. Agreement is moderate overall (0.54 across the 150 image--configuration pairs) and is highest, and most consistent, for the efficient YOLO26m at 640 px (0.73 $\pm$ 0.04), the same configuration favoured on accuracy--efficiency grounds. Importantly, and contrary to an intuitive assumption, high inter-method agreement does \emph{not} track prediction correctness: mean agreement is essentially identical for correct and incorrect predictions (0.53 vs.\ 0.58) and is uncorrelated with model confidence (Spearman $\approx 0$), as Fig.~\ref{fig:agree} shows. Agreement is therefore useful as a descriptive summary of attribution stability but, on this dataset, should not be read as a confidence signal on its own~\cite{adadi2018peeking}, a caution worth stating explicitly before clinical deployment.
+We also quantify how much the seven maps agree, per image, as the mean pairwise Spearman correlation between them. Because the gradient-based maps coincide while Eigen-CAM is markedly different, cross-method agreement is low overall (mean $\approx 0.05$ across the 150 image--configuration pairs). Importantly, and contrary to an intuitive assumption, agreement does \emph{not} track prediction correctness: it is essentially identical for correct and incorrect predictions ($0.053$ vs.\ $0.049$; Mann--Whitney $p=0.24$) and is uncorrelated with model confidence (Spearman $=0.11$), as Fig.~\ref{fig:agree} shows. Agreement is therefore a descriptive summary of attribution stability but, on this dataset, should not be read as a confidence signal on its own~\cite{adadi2018peeking}, a caution worth stating explicitly before clinical deployment.
 
 \begin{figure}[htbp]
 \centering
