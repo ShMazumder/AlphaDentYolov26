@@ -3,6 +3,7 @@
 \usetikzlibrary{arrows.meta, positioning, fit, backgrounds, calc}
 \usepackage[T1]{fontenc}
 \usepackage{helvet}
+\usepackage{amsmath,amssymb}
 \renewcommand{\familydefault}{\sfdefault}
 
 \definecolor{cData}{HTML}{E3F2FD}
@@ -11,69 +12,78 @@
 \definecolor{cTrainB}{HTML}{2E7D32}
 \definecolor{cVal}{HTML}{FFF3E0}
 \definecolor{cValB}{HTML}{E65100}
-\definecolor{cXAI}{HTML}{F3E5F5}
-\definecolor{cXAIB}{HTML}{6A1B9A}
 \definecolor{cOut}{HTML}{ECEFF1}
 \definecolor{cOutB}{HTML}{37474F}
+\definecolor{cXAI}{HTML}{F3E5F5}
+\definecolor{cXAIB}{HTML}{6A1B9A}
 
 \begin{document}
 \begin{tikzpicture}[
-  font=\footnotesize,
-  node distance=4mm and 5mm,
-  box/.style={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=8mm, line width=0.7pt},
-  sub/.style={draw, rounded corners=1.5pt, align=center, inner sep=3pt, minimum height=6mm, fill=white, line width=0.5pt},
-  grp/.style={draw, rounded corners=3pt, inner sep=6pt, line width=0.9pt},
-  lbl/.style={font=\bfseries\footnotesize, anchor=west},
-  arr/.style={-{Stealth[length=2.5mm]}, line width=0.9pt, draw=black!70}
+  font=\scriptsize,
+  box/.style={draw, rounded corners=2pt, align=center, inner sep=3pt,
+              text width=27mm, minimum height=9mm, line width=0.6pt, fill=white},
+  boxw/.style={box, text width=31mm},
+  grp/.style={draw, rounded corners=3pt, inner sep=5pt, line width=0.9pt},
+  ttl/.style={font=\bfseries\scriptsize, align=center, text width=33mm},
+  arr/.style={-{Stealth[length=2.2mm]}, line width=0.9pt, draw=black!65},
+  varr/.style={-{Stealth[length=2.0mm]}, line width=0.7pt, draw=black!55}
 ]
+\def\yc{-21mm}   % vertical-center shift for the 2-box stages
 
-% ---------- Stage 1: Data ----------
-\node[sub, draw=cDataB] (kaggle) {AlphaDent dataset\\ (Kaggle mount)};
-\node[sub, draw=cDataB, right=of kaggle] (zenodo) {Zenodo mirror\\ (fallback)};
-\node[sub, draw=cDataB, below=5mm of $(kaggle.south)!0.5!(zenodo.south)$] (copy) {Recursive copy to writable dir\\ \texttt{shutil.copytree(...)} $\rightarrow$ labels, images, YAML};
+% STAGE 1
+\node[box, draw=cDataB] (a1) at (0mm,\yc) {AlphaDent (\mbox{Kaggle} mount)\\[1pt] Zenodo mirror fallback};
+\node[box, draw=cDataB, below=5mm of a1] (a2) {Recursive copy to writable dir:\\ images, labels, YAML};
+\draw[varr] (a1) -- (a2);
 \begin{scope}[on background layer]
-\node[grp, draw=cDataB, fill=cData, fit=(kaggle)(zenodo)(copy), label={[lbl, text=cDataB]north west:1. Automated Dataset Staging}, inner ysep=14pt, yshift=-4pt] (g1) {};
+\node[grp, draw=cDataB, fill=cData, fit=(a1)(a2)] (g1) {};
 \end{scope}
-\draw[arr] (kaggle) -- (copy);
-\draw[arr] (zenodo) -- (copy);
+\node[ttl, text=cDataB, above=1.5mm of g1.north] {1. Dataset Staging};
 
-% ---------- Stage 2: Training ----------
-\node[sub, draw=cTrainB, below=13mm of copy] (gpu) {Dynamic GPU enumeration\\ $\mathcal{D}=\{0,\dots,N_{\mathrm{GPU}}-1\}$};
-\node[sub, draw=cTrainB, below=of gpu] (ddp) {DDP multi-GPU training ($\approx 1.85\times$ speedup)\\ YOLO26m@640 \,/\, YOLO26l@960 \,/\, YOLO26x@960};
+% STAGE 2
+\node[box, draw=cTrainB] (b1) at (46mm,\yc) {Dynamic GPU set\\ $\mathcal{D}=\{0,\dots,N_{\mathrm{GPU}}{-}1\}$};
+\node[box, draw=cTrainB, below=5mm of b1] (b2) {DDP training ($\approx\!1.85\times$)\\ 26m@640, 26l/26x@960\\ Segment26 head};
+\draw[varr] (b1) -- (b2);
 \begin{scope}[on background layer]
-\node[grp, draw=cTrainB, fill=cTrain, fit=(gpu)(ddp), label={[lbl, text=cTrainB]north west:2. YOLO26 Training (Segment26 head)}, inner ysep=14pt, yshift=-4pt] (g2) {};
+\node[grp, draw=cTrainB, fill=cTrain, fit=(b1)(b2)] (g2) {};
 \end{scope}
-\draw[arr] (gpu) -- (ddp);
+\node[ttl, text=cTrainB, above=1.5mm of g2.north] {2. YOLO26 Training};
 
-% ---------- Stage 3: Validation ----------
-\node[sub, draw=cValB, below=13mm of ddp] (flush) {Single device $\mathcal{D}_0$; disable raw dumps;\\ \texttt{gc.collect()} + \texttt{empty\_cache()}};
-\node[sub, draw=cValB, below=of flush] (heal) {Self-healing fallback:\\ CUDA OOM $\Rightarrow$ re-run \texttt{val()} on CPU};
+% STAGE 3
+\node[box, draw=cValB] (c1) at (92mm,\yc) {Single device $\mathcal{D}_0$;\\ flush cache, no raw dumps};
+\node[box, draw=cValB, below=5mm of c1] (c2) {Self-healing fallback:\\ CUDA OOM $\Rightarrow$ re-run\\ \texttt{val()} on CPU};
+\draw[varr] (c1) -- (c2);
 \begin{scope}[on background layer]
-\node[grp, draw=cValB, fill=cVal, fit=(flush)(heal), label={[lbl, text=cValB]north west:3. Memory-Safe Validation}, inner ysep=14pt, yshift=-4pt] (g3) {};
+\node[grp, draw=cValB, fill=cVal, fit=(c1)(c2)] (g3) {};
 \end{scope}
-\draw[arr] (flush) -- (heal);
+\node[ttl, text=cValB, above=1.5mm of g3.north] {3. Memory-Safe Validation};
 
-% ---------- Stage 4: Outputs ----------
-\node[sub, draw=cOutB, below=13mm of heal] (seg) {9-class pathology instance masks\\ Box / Mask mAP@50 metrics};
+% STAGE 4
+\node[box, draw=cOutB] (d1) at (138mm,\yc) {9-class pathology\\ instance masks};
+\node[box, draw=cOutB, below=5mm of d1] (d2) {Box / Mask mAP@50\\ evaluation};
+\draw[varr] (d1) -- (d2);
 \begin{scope}[on background layer]
-\node[grp, draw=cOutB, fill=cOut, fit=(seg), label={[lbl, text=cOutB]north west:4. Prediction \& Evaluation}, inner ysep=14pt, yshift=-4pt] (g4) {};
+\node[grp, draw=cOutB, fill=cOut, fit=(d1)(d2)] (g4) {};
 \end{scope}
+\node[ttl, text=cOutB, above=1.5mm of g4.north] {4. Prediction \& Eval};
 
-% ---------- Stage 5: XAI ----------
-\node[sub, draw=cXAIB, below=13mm of seg] (hooks) {\textit{YOLOExplainer}: hooks on C3k2 neck layer (idx 22)\\ $\rightarrow$ activations $A^k$; Segment26 class-score\\ backprop $\rightarrow$ gradients $\partial y^c/\partial A^k$};
-\node[sub, draw=cXAIB, below=of hooks, text width=62mm] (cams) {7 CAM methods: Eigen \,$\cdot$\, Grad \,$\cdot$\, Grad++ \,$\cdot$\, XGrad \,$\cdot$\, HiRes \,$\cdot$\, Layer \,$\cdot$\, EigenGrad};
-\node[sub, draw=cXAIB, below=of cams] (clin) {Clinician visual audit of lesion attributions};
+% STAGE 5 (tallest, anchored at top y=0)
+\node[boxw, draw=cXAIB] (e1) at (185mm,0mm) {\textit{YOLOExplainer}: C3k2 neck hooks (idx 22) $\to A^k$;\\ Segment26 backprop $\partial y^c/\partial A^k$};
+\node[boxw, draw=cXAIB, below=5mm of e1] (e2) {7 CAM methods: Eigen, Grad, Grad++,\\ XGrad, HiRes, Layer, EigenGrad};
+\node[boxw, draw=cXAIB, below=5mm of e2] (e3) {Quantitative eval: faithfulness\\ (del/ins AUC) + agreement\\ $\Rightarrow$ Eigen-CAM most faithful};
+\node[boxw, draw=cXAIB, below=5mm of e3] (e4) {Clinician visual audit of\\ lesion attributions};
+\draw[varr] (e1) -- (e2);
+\draw[varr] (e2) -- (e3);
+\draw[varr] (e3) -- (e4);
 \begin{scope}[on background layer]
-\node[grp, draw=cXAIB, fill=cXAI, fit=(hooks)(cams)(clin), label={[lbl, text=cXAIB]north west:5. Explainability (XAI)}, inner ysep=14pt, yshift=-4pt] (g5) {};
+\node[grp, draw=cXAIB, fill=cXAI, fit=(e1)(e2)(e3)(e4)] (g5) {};
 \end{scope}
-\draw[arr] (hooks) -- (cams);
-\draw[arr] (cams) -- (clin);
+\node[ttl, text=cXAIB, above=1.5mm of g5.north] {5. Explainability (XAI)};
 
-% ---------- Inter-stage arrows ----------
-\draw[arr] (g1) -- (g2);
-\draw[arr] (g2) -- (g3);
-\draw[arr] (g3) -- (g4);
-\draw[arr] (g4) -- (g5);
+% INTER-STAGE ARROWS (aligned to common center line)
+\draw[arr] (g1.east) -- (g2.west);
+\draw[arr] (g2.east) -- (g3.west);
+\draw[arr] (g3.east) -- (g4.west);
+\draw[arr] (g4.east) -- (g5.west);
 
 \end{tikzpicture}
 \end{document}
