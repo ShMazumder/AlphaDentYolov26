@@ -1,7 +1,11 @@
 # XAI Re-run & Manuscript Re-integration Checklist
 Goal: regenerate the XAI faithfulness/agreement results with the **fixed** (localized-peak) CAM code, produce the real Fig 2, and fold the corrected numbers back into the OMLET_2026 paper.
 
-Why: the current Table IV / Fig 4 / Fig 5 were produced by the **collapsed** CAM implementation (HiRes-CAM ≡ Layer-CAM, Grad ≈ XGrad). The code is now fixed; the results must be refreshed.
+Why: the current Table IV / Fig 4 / Fig 5 were produced by a **broken** CAM target. The v5 run exposed two faults now fixed:
+- The train-mode target indexed `mm[:, -nc+class_idx]`, which counts from the tail and lands in the **32 mask-coefficient channels, not the class logits** → smooth non-negative gradient → HiRes≡Layer, Grad≡XGrad collapse.
+- The chosen peak could sit on a detection scale that bypasses the hooked layer 22 → backward hook never fired → `KeyError('grad')` skips (all images for 26m_640/26x_960).
+
+Fix (applied in the repo): `compute_act_grad` / `YOLOExplainer._act_grad` now do **one eval-mode differentiable forward** and backprop the **top detection's class confidence** (via `pred_class_and_score` / `_top_class_score`) — correct class channel, downstream of the whole neck, so gradient always reaches layer 22.
 
 ---
 
@@ -41,7 +45,9 @@ Recommendation: the inference-only re-runs are **mandatory** (they make the XAI/
   - [ ] `fig_faithfulness.png`, `fig_agreement.png`
 
 ## C. Verify the CAM fix actually took (critical gate)
-- [ ] Run the added **cosine-similarity cell**. Requirement: `HiResCAM vs LayerCAM` cosine **< 1.000** (was exactly 1.000 before). If still 1.000, the old code is being used — stop and recheck the pull/paste.
+- [ ] **No `KeyError('grad')` skips** in the run log — every image should produce rows (the eval-mode target guarantees the layer-22 hook fires).
+- [ ] Run the added **cosine-similarity cell**. Requirement: `HiResCAM vs LayerCAM` cosine **< 1.000** (was exactly 1.000 before). If still 1.000, the old code is being used — stop and recheck the pull.
+- [ ] In `faithfulness_pooled.csv`, `GradCAM`, `GradCAM++`, `XGradCAM` should **no longer be bit-identical**, and `HiRes-CAM`/`Layer-CAM` should differ.
 - [ ] In `faithfulness_pooled.csv`, confirm HiRes-CAM and Layer-CAM rows are **no longer identical**.
 - [ ] Sanity-check ranking still makes sense (EigenCAM strong on insertion; report whatever the corrected numbers show — do not assume the old ordering holds).
 
