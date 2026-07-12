@@ -3,3 +3,9 @@
 /AlphaDent/*/
 
 /.graphify-out/
+# --- housekeeping (added) ---
+trash/
+/AlphaDent_4class/*/
+*.ipynb.bak
+grid_search_results.csv
+__pycache__/

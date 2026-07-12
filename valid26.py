@@ -51,8 +51,8 @@ if __name__ == '__main__':
     parser.add_argument(
         "--dataset_config",
         type=str,
-        default=code_path + 'AlphaDent/yolo26_seg_train.yaml',
-        help="Path to yolo26_seg_train.yaml for AlphaDent dataset"
+        default=code_path + 'AlphaDent/yolo_seg_train.yaml',
+        help="Path to yolo_seg_train.yaml for AlphaDent dataset"
     )
     parser.add_argument(
         "--weights",

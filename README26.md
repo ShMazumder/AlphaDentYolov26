@@ -6,13 +6,21 @@ Repository for AlphaDent dataset. It contains links for dataset, train, validati
 
 * Dataset on [zenodo](https://zenodo.org/records/16582489), [kaggle](https://www.kaggle.com/competitions/alpha-dent/data), [huggingface](https://huggingface.co/datasets/ZFTurbo/AlphaDent), [github](https://github.com/ZFTurbo/AlphaDent/releases/tag/v1.1)
 
-## Interactive Jupyter Notebook (Kaggle/Colab)
+## End-to-End Notebooks (canonical, Kaggle/Colab)
 
-An end-to-end interactive notebook is available at [alphadent-yolo26.ipynb](alphadent-yolo26.ipynb). It includes:
-* **Automatic Dataset Setup**: Resolves Kaggle read-only input mount directory issues or downloads the Zenodo ZIP fallback.
+Three self-contained notebooks reproduce the paper *"Multi-Method Explainability for YOLO26-Based Caries Detection in Intra-oral Photos"*:
+
+1. **[alphadent-yolo26.ipynb](alphadent-yolo26.ipynb)** — 9-class end-to-end: dataset setup, DDP training, self-healing validation, inference, and qualitative CAMs. Runs write to `runs/segment/`.
+2. **[alphadent-yolo26-4class.ipynb](alphadent-yolo26-4class.ipynb)** — merged 4-class (Abrasion, Filling, Crown, Caries) end-to-end. Builds a **separate, non-destructive** `AlphaDent_4class/` dataset (9-class labels are never overwritten) and isolates its runs under `runs_4classes/segment/`.
+3. **[alphadent-xai-eval.ipynb](alphadent-xai-eval.ipynb)** — quantitative XAI evaluation: causal deletion/insertion faithfulness AUC and inter-method agreement across the 7 CAM methods (produces the paper's faithfulness table and figures).
+
+Shared features:
+* **Automatic Dataset Setup**: Resolves Kaggle read-only input mount issues or downloads the Zenodo ZIP fallback.
 * **Multi-GPU / DDP Training**: Dynamically configures distributed data parallel training across all available GPUs.
-* **Self-Healing Validation**: Optimized to prevent CUDA Out-of-Memory crashes on high-resolution dental images by falling back to CPU validation if VRAM limit is exceeded.
-* **Explainable AI (XAI)**: Includes a custom, self-contained `YOLOExplainer` class supporting 7 Class Activation Mapping (CAM) methods: **Eigen-CAM**, **Grad-CAM**, **Grad-CAM++**, **XGrad-CAM**, **HiRes-CAM**, **Layer-CAM**, and **EigenGrad-CAM**.
+* **Self-Healing Validation**: Falls back to CPU validation on CUDA OOM for high-resolution dental images.
+* **Explainable AI (XAI)**: A self-contained `YOLOExplainer` supporting 7 CAM methods — **Eigen-CAM**, **Grad-CAM**, **Grad-CAM++**, **XGrad-CAM**, **HiRes-CAM**, **Layer-CAM**, **EigenGrad-CAM** — using a localized-peak attribution target so the gradient-based methods stay distinct, plus an `nc` guard that refuses to score a wrong-class checkpoint.
+
+> Older per-model and superseded scripts/notebooks have been moved to `trash/` (git-ignored).
 
 ## Train
 
@@ -20,7 +28,7 @@ An end-to-end interactive notebook is available at [alphadent-yolo26.ipynb](alph
 * Then you can train with following script:
 
 ```bash
-python3 train.py --dataset_config ./AlphaDent/yolo_seg_train.yaml --batch_size 16 --epochs 100 --image_size 640
+python3 train26.py --dataset_config ./AlphaDent/yolo_seg_train.yaml --batch_size 16 --epochs 100 --image_size 640
 ```
 
 Results of training will be stored in folder `./yolo_seg_x_proj_640`.
@@ -38,7 +46,7 @@ There are 3 different pretrained wights available:
 Validation will run model with validation data and output metrics.
 
 ```bash
-python3 valid26.py --weights './weights/yolo26x_AlphaDent_9_classes_640px.pt' --dataset_config './AlphaDent/yolo26_seg_train.yaml' --batch_size 16 --epochs 100 --image_size 640
+python3 valid26.py --weights './weights/yolo26x_AlphaDent_9_classes_640px.pt' --dataset_config './AlphaDent/yolo_seg_train.yaml' --batch_size 16 --epochs 100 --image_size 640
 ```
 
 ## Inference
@@ -46,37 +54,4 @@ python3 valid26.py --weights './weights/yolo26x_AlphaDent_9_classes_640px.pt' --
 If you have new dental photos for which you want to obtain predictions you can use inference script.
 
 ```bash
-python3 inference26.py --weights './weights/yolo26x_AlphaDent_9_classes_640px.pt' --input_path './AlphaDent/images/test/' --output_path './output/' --batch_size 16 --image_size 640
-```
-
-## Useful scripts
-
-### Convert 9 classes dataset to 4 classes
-
-```bash
-python3 utils/convert_9_classes_dataset_to_4_classes_yolo26.py --input_path './AlphaDent/' --output_path './AlphaDent_4_classes/' 
-```
-
-### Draw Yolo annotations
-
-```bash
-python3 utils/draw_annotations.py --input_path './AlphaDent/' --output_path './Draw_Annotations/' 
-```
-
-## Citations
-
-If you find this work useful please cite:
-
-```
-@misc{sosnin2025alphadent,
-  title={AlphaDent: A dataset for automated tooth pathology detection},
-  author={Evgeniy I. Sosnin and Yuriy L. Vasilev and Roman A. Solovyev and Aleksandr L. Stempkovskiy and Dmitry V. Telpukhov and Artem A. Vasilev and Aleksandr A. Amerikanov and Aleksandr Y. Romanov},
-  journal={Computer Optics},
-  volume={49},
-  pages={6},
-  year={2025},
-}
-```
-
-
-
+python3 inference26.py --weights './weights/yolo26x_AlphaDent_9_classes_640px.pt' --input
